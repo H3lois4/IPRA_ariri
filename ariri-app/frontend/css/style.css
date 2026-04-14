@@ -87,6 +87,27 @@ body {
   min-height: 100vh;
   padding: 16px;
   padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + 24px);
+  position: relative;
+}
+
+/* Diagonal decorative background shape for pages */
+#app::before {
+  content: '';
+  position: fixed;
+  top: -20%;
+  left: -30%;
+  width: 100%;
+  height: 70%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(-15deg);
+  border-radius: 0 0 50% 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#app > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* ============================================
@@ -158,12 +179,13 @@ body {
   max-width: 480px;
   height: var(--nav-height);
   padding-bottom: var(--safe-bottom);
-  background: var(--white);
+  background: var(--green);
   display: flex;
   align-items: center;
   justify-content: space-around;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
   z-index: 900;
+  border-radius: 0;
 }
 
 .nav-item {
@@ -171,10 +193,9 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
   flex: 1;
-  padding: 8px 0;
-  color: var(--text-muted);
+  padding: 12px 0;
+  color: rgba(255, 255, 255, 0.55);
   cursor: pointer;
   transition: color 0.2s ease;
   -webkit-tap-highlight-color: transparent;
@@ -183,27 +204,17 @@ body {
 }
 
 .nav-item .nav-icon {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   transition: color 0.2s ease;
 }
 
-.nav-item .nav-label {
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-}
-
 .nav-item.active {
-  color: var(--green);
-}
-
-.nav-item.active .nav-label {
-  font-weight: 700;
+  color: var(--white);
 }
 
 .nav-item:focus-visible {
-  outline: 2px solid var(--green);
+  outline: 2px solid var(--white);
   outline-offset: -2px;
   border-radius: 4px;
 }
@@ -212,47 +223,82 @@ body {
    Splash Screen
    ============================================ */
 .splash-screen {
+  position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   min-height: 100vh;
   background-color: var(--cream);
-  text-align: center;
-  padding: 32px;
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
+  overflow: hidden;
+}
+
+/* Diagonal decorative shape */
+.splash-screen::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: -30%;
+  width: 120%;
+  height: 80%;
+  background: rgba(255, 255, 255, 0.35);
+  transform: rotate(-15deg);
+  border-radius: 0 0 60% 0;
+  pointer-events: none;
+}
+
+.splash-logo-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  padding: 32px;
 }
 
 .splash-logo {
-  font-size: 32px;
-  font-weight: 800;
-  color: var(--green);
-  margin-bottom: 24px;
-  letter-spacing: -0.5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .splash-logo img {
-  max-width: 180px;
-  margin: 0 auto 16px;
+  max-width: 260px;
+  width: 100%;
+  height: auto;
+}
+
+.splash-logo-text {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--green);
+  letter-spacing: -0.5px;
+}
+
+.splash-verse-area {
+  position: relative;
+  z-index: 1;
+  padding: 0 28px 48px;
+  text-align: left;
 }
 
 .splash-verse {
   font-size: 16px;
   font-style: italic;
-  color: var(--green-light);
+  color: var(--text-primary);
+  line-height: 1.5;
   max-width: 300px;
-  line-height: 1.6;
 }
 
 .splash-verse cite {
   display: block;
-  margin-top: 8px;
-  font-size: 13px;
+  margin-top: 6px;
+  font-size: 14px;
   font-style: normal;
   font-weight: 600;
-  color: var(--green);
+  color: var(--text-primary);
 }
 
 .splash-tap-hint {
@@ -283,6 +329,99 @@ body {
 .page-subtitle {
   font-size: 14px;
   color: var(--text-secondary);
+
+/* ============================================
+   Page Top Bar (logo left + title right)
+   ============================================ */
+.page-top-bar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 12px;
+}
+
+.page-top-logo {
+  width: 120px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.page-top-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--green);
+  text-align: right;
+  padding-top: 8px;
+}
+
+/* ============================================
+   Info Day Cards
+   ============================================ */
+.info-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.info-day-card {
+  background: var(--cream-dark);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  min-height: 100px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: flex;
+  align-items: flex-start;
+}
+
+.info-day-card:active {
+  transform: scale(0.98);
+}
+
+.info-day-label {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* ============================================
+   New Form Card + Add Circle Button
+   ============================================ */
+.new-form-card {
+  cursor: pointer;
+}
+
+.new-form-card-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.add-circle-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--green);
+  color: var(--white);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.add-circle-btn:active {
+  transform: scale(0.9);
+}
+
+.add-circle-btn svg {
+  width: 24px;
+  height: 24px;
+}
   margin-top: 4px;
 }
 
@@ -417,7 +556,163 @@ body {
 }
 
 /* ============================================
-   Forms
+   Form Page (new design)
+   ============================================ */
+.form-page-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.form-section {
+  margin-bottom: 20px;
+}
+
+.form-section-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.form-checkbox-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px 8px;
+}
+
+.form-check-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-primary);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.form-check-item input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--green);
+  flex-shrink: 0;
+  border: 1.5px solid #bbb;
+  border-radius: 3px;
+}
+
+.form-field-underline {
+  width: 100%;
+  padding: 10px 0;
+  border: none;
+  border-bottom: 1.5px solid #ddd;
+  font-size: 15px;
+  background: transparent;
+  color: var(--text-primary);
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.form-field-underline:focus {
+  border-bottom-color: var(--green);
+}
+
+.form-upload-area {
+  position: relative;
+  width: 100%;
+  min-height: 140px;
+  background: var(--cream-dark);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.form-upload-area input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.form-upload-icon {
+  transition: opacity 0.2s ease;
+}
+
+.form-upload-area.has-preview .form-upload-icon {
+  display: none;
+}
+
+.form-upload-area .image-upload-preview {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: var(--radius);
+}
+
+.form-submit-btn {
+  display: block;
+  width: 70%;
+  margin: 24px auto 16px;
+  padding: 14px 24px;
+  background: var(--green);
+  color: var(--white);
+  border: none;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.1s ease;
+}
+
+.form-submit-btn:active {
+  transform: scale(0.97);
+}
+
+.form-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Form row pair (side by side fields) */
+.form-row-pair {
+  display: flex;
+  gap: 12px;
+}
+
+.form-row-half {
+  flex: 1;
+  min-width: 0;
+}
+
+.form-field-box {
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--cream-dark);
+  font-size: 14px;
+  color: var(--text-primary);
+  font-family: inherit;
+  outline: none;
+}
+
+.form-field-box:focus {
+  box-shadow: 0 0 0 2px rgba(26, 71, 49, 0.15);
+}
+
+.form-field-box[readonly] {
+  color: var(--text-secondary);
+  cursor: default;
+}
+
+/* ============================================
+   Forms (legacy)
    ============================================ */
 .form-group {
   margin-bottom: 18px;
@@ -568,75 +863,56 @@ body {
 /* ============================================
    Feed / Post Cards (Diário de Bordo)
    ============================================ */
-.feed {
+.diary-feed-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.post-card {
+.diary-post-card {
   background: var(--white);
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: var(--shadow);
 }
 
-.post-card-header {
+.diary-post-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 16px 0;
+  justify-content: space-between;
+  padding: 14px 16px 8px;
 }
 
-.post-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--green);
-  color: var(--white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 15px;
-  flex-shrink: 0;
-}
-
-.post-meta {
-  flex: 1;
-}
-
-.post-author {
+.diary-post-author {
   font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
 }
 
-.post-date {
-  font-size: 11px;
+.diary-post-date {
+  font-size: 12px;
   color: var(--text-muted);
 }
 
-.post-card-image {
+.diary-post-image {
   width: 100%;
   max-height: 280px;
   object-fit: cover;
-  margin-top: 12px;
 }
 
-.post-card-body {
-  padding: 14px 16px 16px;
+.diary-post-body {
+  padding: 12px 16px 16px;
 }
 
-.post-title {
-  font-size: 16px;
+.diary-post-title {
+  font-size: 15px;
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
-.post-description {
-  font-size: 14px;
+.diary-post-desc {
+  font-size: 13px;
   color: var(--text-secondary);
   line-height: 1.5;
 }
@@ -743,49 +1019,40 @@ body {
 /* ============================================
    Menu Page
    ============================================ */
-.menu-list {
+.menu-simple-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 2px;
 }
 
-.menu-item {
+.menu-simple-item {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 18px 16px;
-  background: var(--white);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  justify-content: space-between;
+  padding: 18px 20px;
+  background: var(--cream-dark);
   cursor: pointer;
-  transition: transform 0.15s ease;
-}
-
-.menu-item:active {
-  transform: scale(0.98);
-}
-
-.menu-item-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--cream);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--green);
-  flex-shrink: 0;
-}
-
-.menu-item-label {
-  flex: 1;
+  transition: background-color 0.15s ease;
   font-size: 15px;
-  font-weight: 600;
   color: var(--text-primary);
 }
 
-.menu-item-chevron {
+.menu-simple-item:first-child {
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.menu-simple-item:last-child {
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+
+.menu-simple-item:active {
+  background: rgba(26, 71, 49, 0.06);
+}
+
+.menu-simple-arrow {
   color: var(--text-muted);
+  font-size: 16px;
+  font-weight: 600;
 }
 
 /* ============================================
@@ -842,71 +1109,135 @@ body {
 /* ============================================
    Volunteer Profile
    ============================================ */
-.profile-header {
+.vol-profile-header {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  text-align: center;
-  margin-bottom: 24px;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: var(--cream-dark);
+  border-radius: var(--radius);
 }
 
-.profile-avatar {
-  width: 80px;
-  height: 80px;
+.vol-profile-avatar {
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  background: var(--green);
+  background: var(--green-light);
   color: var(--white);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
+  font-size: 24px;
   font-weight: 700;
-  margin-bottom: 12px;
+  flex-shrink: 0;
   object-fit: cover;
 }
 
-.profile-name {
-  font-size: 20px;
+.vol-profile-name {
+  font-size: 16px;
   font-weight: 700;
   color: var(--text-primary);
 }
 
-.profile-section {
-  margin-bottom: 16px;
+.vol-profile-data {
+  padding: 0 4px;
+  margin-bottom: 24px;
 }
 
-.profile-section-title {
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-}
-
-.profile-field {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--cream-dark);
+.vol-profile-data p {
   font-size: 14px;
-}
-
-.profile-field-label {
-  color: var(--text-secondary);
-}
-
-.profile-field-value {
   color: var(--text-primary);
-  font-weight: 500;
-  text-align: right;
-  max-width: 60%;
-  word-break: break-word;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  line-height: 1.4;
+}
+
+.vol-profile-docs {
+  margin-bottom: 20px;
+}
+
+.vol-doc-box {
+  background: var(--cream-dark);
+  border-radius: var(--radius);
+  min-height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.vol-doc-box a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Team name list (with gaps between items) */
+.team-name-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.team-name-list .menu-simple-item {
+  border-radius: var(--radius);
 }
 
 /* ============================================
    Day Detail Page
    ============================================ */
+.back-circle-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--green);
+  padding: 0;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-circle-btn svg {
+  width: 28px;
+  height: 28px;
+}
+
+.day-detail-day-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.detail-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.detail-card {
+  background: var(--cream-dark);
+  border-radius: var(--radius);
+  padding: 20px;
+  min-height: 120px;
+}
+
+.detail-card-label {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.detail-card-content {
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
 .day-detail-section {
   margin-bottom: 20px;
 }
@@ -925,26 +1256,26 @@ body {
 .schedule-item {
   display: flex;
   gap: 12px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--cream-dark);
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
 }
 
 .schedule-time {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--green);
-  width: 52px;
+  width: 48px;
   flex-shrink: 0;
 }
 
 .schedule-activity {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-primary);
 }
 
 .menu-meal {
-  padding: 10px 0;
-  border-bottom: 1px solid var(--cream-dark);
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
 }
 
 .menu-meal-label {
@@ -956,7 +1287,7 @@ body {
 }
 
 .menu-meal-content {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-primary);
 }
 
@@ -968,7 +1299,7 @@ body {
 
 .material-tag {
   padding: 6px 12px;
-  background: var(--cream);
+  background: rgba(255,255,255,0.6);
   border-radius: 20px;
   font-size: 13px;
   color: var(--green);

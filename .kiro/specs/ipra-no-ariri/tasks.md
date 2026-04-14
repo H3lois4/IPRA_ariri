@@ -77,7 +77,7 @@ Implementação incremental do app IPRA no Ariri — uma SPA offline-first com b
 - [x] 3. Checkpoint — Verificar backend
   - Garantir que todos os testes passam e que o servidor Flask inicia corretamente. Perguntar ao usuário se há dúvidas.
 
-- [ ] 4. Frontend — Estrutura base e roteamento SPA
+- [x] 4. Frontend — Estrutura base e roteamento SPA
   - [x] 4.1 Criar `index.html` com estrutura base
     - Incluir meta viewport para mobile-first
     - Incluir link para `css/style.css` e scripts JS
@@ -99,14 +99,14 @@ Implementação incremental do app IPRA no Ariri — uma SPA offline-first com b
     - Listener em `hashchange` para navegação sem reload
     - _Requisitos: 3.2, 3.3, 15.2_
 
-- [ ] 5. Frontend — IndexedDB e Sincronização
-  - [~] 5.1 Implementar `js/db.js` — helper IndexedDB
+- [x] 5. Frontend — IndexedDB e Sincronização
+  - [x] 5.1 Implementar `js/db.js` — helper IndexedDB
     - Criar/abrir banco com 3 stores: `pending_forms`, `pending_posts`, `pending_receipts`
     - Implementar métodos: `init()`, `addPending(store, item)`, `getPending(store)`, `markSynced(store, id)`, `clearSynced(store)`
     - Cada registro deve conter: id (UUID), type, data, created_at (ISO 8601), synced (false)
     - _Requisitos: 11.1, 11.2, 11.3, 11.4_
 
-  - [~] 5.2 Implementar `js/sync.js` — lógica de sincronização
+  - [x] 5.2 Implementar `js/sync.js` — lógica de sincronização
     - Polling a cada 30 segundos via `GET /api/ping`
     - Ao detectar servidor acessível, buscar itens pendentes e enviar em ordem cronológica (created_at)
     - Marcar itens como `synced=true` após envio bem-sucedido
@@ -129,14 +129,14 @@ Implementação incremental do app IPRA no Ariri — uma SPA offline-first com b
     - Para qualquer item pendente, após sincronização bem-sucedida, o campo synced deve ser atualizado para true
     - **Valida: Requisitos 12.3**
 
-- [ ] 6. Frontend — Splash Screen e Identificação do Voluntário
-  - [~] 6.1 Implementar `js/pages/splash.js` — Splash Screen
+- [x] 6. Frontend — Splash Screen e Identificação do Voluntário
+  - [x] 6.1 Implementar `js/pages/splash.js` — Splash Screen
     - Exibir logo "IPRA no Ariri" centralizado sobre fundo creme (#faf6ee) com elementos em verde escuro (#1a4731)
     - Exibir versículo "Ide ao mundo, pregai o evangelho a toda criatura." — Marcos 16:15
     - Ao tocar/clicar em qualquer área, navegar para `#/info`
     - _Requisitos: 1.1, 1.2, 1.3_
 
-  - [~] 6.2 Implementar tela de identificação do voluntário
+  - [x] 6.2 Implementar tela de identificação do voluntário
     - Se não há `volunteer_name` no localStorage, exibir tela de seleção/digitação de nome
     - Salvar nome no localStorage ao confirmar
     - _Requisitos: 2.1, 2.2_
@@ -151,13 +151,13 @@ Implementação incremental do app IPRA no Ariri — uma SPA offline-first com b
     - Para qualquer nome salvo no localStorage, ao criar formulário ou postagem, o campo volunteer_name deve conter exatamente o nome salvo
     - **Valida: Requisitos 2.3, 7.3**
 
-- [ ] 7. Frontend — Página de Informações e Cronograma
-  - [~] 7.1 Implementar `js/pages/info.js` — lista de dias
+- [x] 7. Frontend — Página de Informações e Cronograma
+  - [x] 7.1 Implementar `js/pages/info.js` — lista de dias
     - Exibir 4 cards clicáveis (Sábado, Domingo, Segunda, Terça)
     - Ao tocar em um card, navegar para `#/info/:day`
     - _Requisitos: 4.1, 4.2_
 
-  - [~] 7.2 Implementar `js/pages/day-detail.js` — detalhe do dia
+  - [x] 7.2 Implementar `js/pages/day-detail.js` — detalhe do dia
     - Carregar dados do `/api/schedule` (ou cache local)
     - Renderizar seções: Cronograma (horários e atividades), Cardápio (café, almoço, jantar) e Materiais
     - Tratar erro de carregamento exibindo "Dados não disponíveis"
@@ -168,14 +168,14 @@ Implementação incremental do app IPRA no Ariri — uma SPA offline-first com b
     - Para qualquer estrutura válida de schedule_data.json, a renderização deve conter todas as atividades, itens de cardápio e materiais presentes nos dados
     - **Valida: Requisitos 4.3**
 
-- [ ] 8. Frontend — Página de Formulários e Dashboard
-  - [~] 8.1 Implementar `js/pages/forms.js` — lista de formulários e dashboard
+- [x] 8. Frontend — Página de Formulários e Dashboard
+  - [x] 8.1 Implementar `js/pages/forms.js` — lista de formulários e dashboard
     - Exibir botão "+ Novo formulário" no topo
     - Exibir Dashboard com gráfico de barras (quantidade por ação) e gráfico de pizza (distribuição percentual) quando dados sincronizados existem
     - Ocultar Dashboard quando não há dados sincronizados
     - _Requisitos: 5.1, 6.1, 6.2, 6.3, 6.4_
 
-  - [~] 8.2 Implementar `js/pages/form-new.js` — novo formulário
+  - [x] 8.2 Implementar `js/pages/form-new.js` — novo formulário
     - Campos: Ação realizada (checkboxes múltiplos com 12 opções), Nome completo, Idade, Localidade, Descrição, Imagem (upload)
     - Validar que ao menos uma ação está selecionada antes de enviar
     - Salvar no IndexedDB se offline, enviar ao servidor se online
@@ -192,14 +192,14 @@ Implementação incremental do app IPRA no Ariri — uma SPA offline-first com b
     - Para qualquer conjunto de formulários, a contagem por ação deve corresponder exatamente ao número de formulários que contêm cada ação, e os percentuais devem somar 100% (±1%)
     - **Valida: Requisitos 6.2, 6.3**
 
-- [ ] 9. Frontend — Diário de Bordo
-  - [~] 9.1 Implementar `js/pages/diary.js` — feed de postagens
+- [x] 9. Frontend — Diário de Bordo
+  - [x] 9.1 Implementar `js/pages/diary.js` — feed de postagens
     - Exibir feed ordenado por data decrescente (mais recente primeiro)
     - Cada postagem com: avatar/inicial do autor, nome, data, imagem, título e descrição
     - Botão "+ Nova postagem"
     - _Requisitos: 7.1, 7.2_
 
-  - [~] 9.2 Implementar `js/pages/post-new.js` — nova postagem
+  - [x] 9.2 Implementar `js/pages/post-new.js` — nova postagem
     - Campos: Título, Descrição, Imagem (upload), botão "Publicar"
     - Associar automaticamente o volunteer_name do localStorage
     - Salvar no IndexedDB se offline, enviar ao servidor se online
@@ -210,33 +210,33 @@ Implementação incremental do app IPRA no Ariri — uma SPA offline-first com b
     - Para qualquer conjunto de postagens com datas variadas, o feed deve estar ordenado por data decrescente
     - **Valida: Requisitos 7.1**
 
-- [~] 10. Checkpoint — Verificar frontend principal
+- [x] 10. Checkpoint — Verificar frontend principal
   - Garantir que todas as páginas renderizam corretamente, navegação SPA funciona, e dados são salvos no IndexedDB. Perguntar ao usuário se há dúvidas.
 
-- [ ] 11. Frontend — Menu, Prestação de Contas e Dados da Equipe
-  - [~] 11.1 Implementar `js/pages/menu.js` — menu principal
+- [x] 11. Frontend — Menu, Prestação de Contas e Dados da Equipe
+  - [x] 11.1 Implementar `js/pages/menu.js` — menu principal
     - Exibir lista com dois itens: "Prestação de contas" e "Dados da equipe"
     - Navegar para `#/menu/accounts` e `#/menu/team` respectivamente
     - _Requisitos: 10.1, 10.2, 10.3_
 
-  - [~] 11.2 Implementar `js/pages/accounts.js` — prestação de contas
+  - [x] 11.2 Implementar `js/pages/accounts.js` — prestação de contas
     - Solicitar PIN de 4 dígitos antes de exibir conteúdo
     - Exibir mensagem de erro se PIN incorreto
     - Após validação, exibir lista de comprovantes (título, data, imagem, descrição) e botão "+ Adicionar comprovante"
     - _Requisitos: 8.1, 8.2, 8.3_
 
-  - [~] 11.3 Implementar `js/pages/receipt-new.js` — novo comprovante
+  - [x] 11.3 Implementar `js/pages/receipt-new.js` — novo comprovante
     - Campos: Título, Descrição, Imagem do comprovante (upload), botão "Enviar"
     - Salvar no IndexedDB se offline, enviar ao servidor se online
     - _Requisitos: 8.4_
 
-  - [~] 11.4 Implementar `js/pages/team.js` — dados da equipe
+  - [x] 11.4 Implementar `js/pages/team.js` — dados da equipe
     - Solicitar PIN antes de exibir conteúdo
     - Exibir lista de voluntários com nome e foto/avatar
     - Ao tocar em um nome, navegar para `#/menu/team/:id`
     - _Requisitos: 9.1, 9.2, 9.3_
 
-  - [~] 11.5 Implementar `js/pages/volunteer-profile.js` — perfil do voluntário
+  - [x] 11.5 Implementar `js/pages/volunteer-profile.js` — perfil do voluntário
     - Exibir perfil completo: foto, nome, RG, CPF, data de nascimento, sexo, profissão, e-mail, telefone, endereço, termos e dados médicos
     - _Requisitos: 9.4_
 
@@ -250,8 +250,8 @@ Implementação incremental do app IPRA no Ariri — uma SPA offline-first com b
     - Para qualquer voluntário com dados completos, o perfil deve conter todos os campos obrigatórios
     - **Valida: Requisitos 9.4**
 
-- [ ] 12. Frontend — Redimensionamento de Imagens
-  - [~] 12.1 Implementar utilitário de redimensionamento de imagem
+- [x] 12. Frontend — Redimensionamento de Imagens
+  - [x] 12.1 Implementar utilitário de redimensionamento de imagem
     - Usar Canvas API para redimensionar (max 1200px na maior dimensão, manter proporção)
     - Comprimir como JPEG com qualidade 80%
     - Não ampliar imagens já menores que 1200px
@@ -269,15 +269,15 @@ Implementação incremental do app IPRA no Ariri — uma SPA offline-first com b
     - Para qualquer rota válida, navegar deve atualizar o conteúdo sem reload e destacar o ícone correto na Bottom Navigation Bar
     - **Valida: Requisitos 3.2, 3.3**
 
-- [ ] 14. Integração final e ajustes
-  - [~] 14.1 Conectar todos os componentes
+- [x] 14. Integração final e ajustes
+  - [x] 14.1 Conectar todos os componentes
     - Garantir que `app.js` importa e registra todas as páginas
     - Garantir que `sync.js` é iniciado ao carregar o app
     - Garantir que o indicador de conectividade é atualizado em tempo real
     - Verificar que todos os formulários salvam offline e sincronizam corretamente
     - _Requisitos: 3.1, 3.2, 12.1, 12.2, 12.3_
 
-  - [~] 14.2 Configuração da URL do servidor
+  - [x] 14.2 Configuração da URL do servidor
     - Implementar campo de configuração ou constante para URL base do servidor (ex: `http://192.168.1.100:5000`)
     - Salvar no localStorage (`server_url`)
     - _Requisitos: 17.1_
@@ -288,7 +288,7 @@ Implementação incremental do app IPRA no Ariri — uma SPA offline-first com b
     - Carregamento de dados do schedule_data.json
     - _Requisitos: 5.4, 8.2, 12.2, 4.3_
 
-- [~] 15. Checkpoint final
+- [x] 15. Checkpoint final
   - Garantir que todos os testes passam, que o app funciona end-to-end (offline e online), e que a identidade visual está consistente. Perguntar ao usuário se há dúvidas.
 
 ## Notas

@@ -1,11 +1,9 @@
 /**
  * forms.js — Página de Formulários e Dashboard
  *
- * Exibe botão "+ Novo formulário" no topo.
- * Busca formulários sincronizados via GET /api/forms.
- * Se existem dados, exibe Dashboard com gráfico de barras (quantidade por ação)
- * e gráfico de pizza (distribuição percentual via conic-gradient CSS).
- * Se não há dados, oculta o Dashboard.
+ * Layout: logo (esquerda) + "Formulário" (direita) no topo.
+ * Card "Novo formulário:" com botão + circular verde.
+ * Card "Dashboard:" com gráficos de barras e pizza.
  *
  * Requisitos: 5.1, 6.1, 6.2, 6.3, 6.4
  */
@@ -24,80 +22,49 @@
     '#f9a825', '#ff8f00', '#d32f2f', '#7b1fa2'
   ];
 
-  /**
-   * Aggregate form data: count how many forms contain each action type.
-   * Returns { counts: { actionName: number }, total: number }
-   */
   function aggregateActions(forms) {
     var counts = {};
     var total = 0;
-
-    ACTION_TYPES.forEach(function (action) {
-      counts[action] = 0;
-    });
-
+    ACTION_TYPES.forEach(function (a) { counts[a] = 0; });
     forms.forEach(function (form) {
-      var actions = form.actions || [];
-      actions.forEach(function (action) {
-        if (counts[action] !== undefined) {
-          counts[action]++;
-          total++;
-        }
+      (form.actions || []).forEach(function (a) {
+        if (counts[a] !== undefined) { counts[a]++; total++; }
       });
     });
-
     return { counts: counts, total: total };
   }
 
-  /**
-   * Build the bar chart HTML.
-   */
   function buildBarChart(counts, maxCount) {
     var html = '<div class="bar-chart">';
-
     ACTION_TYPES.forEach(function (action) {
       var count = counts[action] || 0;
       var pct = maxCount > 0 ? (count / maxCount) * 100 : 0;
-
       html +=
         '<div class="bar-row">' +
           '<span class="bar-label">' + action + '</span>' +
-          '<div class="bar-track">' +
-            '<div class="bar-fill" style="width:' + pct + '%"></div>' +
-          '</div>' +
+          '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%"></div></div>' +
           '<span class="bar-value">' + count + '</span>' +
         '</div>';
     });
-
     html += '</div>';
     return html;
   }
 
-  /**
-   * Build the pie chart HTML using CSS conic-gradient.
-   */
   function buildPieChart(counts, total) {
-    if (total === 0) {
-      return '<div class="pie-chart"><span class="text-muted">Sem dados</span></div>';
-    }
+    if (total === 0) return '<div class="pie-chart"><span class="text-muted">Sem dados</span></div>';
 
-    // Build conic-gradient stops
     var stops = [];
     var cumulative = 0;
-
     ACTION_TYPES.forEach(function (action, i) {
       var count = counts[action] || 0;
       if (count === 0) return;
-
       var pct = (count / total) * 100;
-      var start = cumulative;
+      stops.push(PIE_COLORS[i] + ' ' + cumulative.toFixed(1) + '% ' + (cumulative + pct).toFixed(1) + '%');
       cumulative += pct;
-      stops.push(PIE_COLORS[i] + ' ' + start.toFixed(1) + '% ' + cumulative.toFixed(1) + '%');
     });
 
     var gradient = 'conic-gradient(' + stops.join(', ') + ')';
 
-    // Build legend
     var legendHtml = '<div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:0">';
     ACTION_TYPES.forEach(function (action, i) {
       var count = counts[action] || 0;
@@ -105,96 +72,94 @@
       var pct = ((count / total) * 100).toFixed(0);
       legendHtml +=
         '<div style="display:flex;align-items:center;gap:6px;font-size:11px">' +
-          '<span style="width:10px;height:10px;border-radius:50%;background:' + PIE_COLORS[i] + ';flex-shrink:0"></span>' +
-          '<span style="color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + action + ' (' + pct + '%)</span>' +
+          '<span style="width:10px;height:10px;border-radius:2px;background:' + PIE_COLORS[i] + ';flex-shrink:0"></span>' +
+          '<span style="color:var(--text-secondary)">' + action + ' (' + pct + '%)</span>' +
         '</div>';
     });
     legendHtml += '</div>';
 
-    var html =
-      '<div class="pie-chart" style="flex-direction:row;gap:16px;align-items:center">' +
-        '<div style="width:120px;height:120px;border-radius:50%;background:' + gradient + ';flex-shrink:0"></div>' +
-        legendHtml +
-      '</div>';
-
-    return html;
+    return '<div class="pie-chart" style="flex-direction:row;gap:16px;align-items:center">' +
+      '<div style="width:100px;height:100px;border-radius:50%;background:' + gradient + ';flex-shrink:0"></div>' +
+      legendHtml + '</div>';
   }
 
-  /**
-   * Build the full dashboard HTML.
-   */
-  function buildDashboard(forms) {
+  function buildDashboardCard(forms) {
     var agg = aggregateActions(forms);
-    var counts = agg.counts;
-    var total = agg.total;
-
-    // Find max count for bar chart scaling
     var maxCount = 0;
-    ACTION_TYPES.forEach(function (action) {
-      if (counts[action] > maxCount) maxCount = counts[action];
+    ACTION_TYPES.forEach(function (a) { if (agg.counts[a] > maxCount) maxCount = agg.counts[a]; });
+
+    // Calculate total people impacted
+    var totalPeople = 0;
+    forms.forEach(function (f) {
+      totalPeople += (f.people_served || 1);
     });
 
-    var html =
-      '<div class="dashboard">' +
-        '<h2 class="dashboard-title">Dashboard</h2>' +
-        '<div class="chart-container">' +
-          '<p class="chart-label">Quantidade por ação</p>' +
-          buildBarChart(counts, maxCount) +
+    return '<div class="detail-card">' +
+      '<p class="detail-card-label">Dashboard:</p>' +
+      '<div class="detail-card-content">' +
+        '<div style="text-align:center;margin-bottom:20px;padding:16px;background:rgba(255,255,255,0.5);border-radius:12px">' +
+          '<div style="font-size:36px;font-weight:800;color:var(--green)">' + totalPeople + '</div>' +
+          '<div style="font-size:13px;color:var(--text-secondary);font-weight:500">Pessoas impactadas</div>' +
         '</div>' +
-        '<div class="chart-container">' +
-          '<p class="chart-label">Distribuição percentual</p>' +
-          buildPieChart(counts, total) +
+        '<div class="chart-container" style="background:transparent;box-shadow:none;padding:0;margin-bottom:16px">' +
+          buildBarChart(agg.counts, maxCount) +
         '</div>' +
-      '</div>';
-
-    return html;
+        '<div class="chart-container" style="background:transparent;box-shadow:none;padding:0">' +
+          buildPieChart(agg.counts, agg.total) +
+        '</div>' +
+      '</div>' +
+    '</div>';
   }
 
-  /**
-   * Render the forms page into the given container.
-   * @param {HTMLElement} container
-   */
   function renderFormsPage(container) {
-    // Header + new form button
     var html =
-      '<div class="page-header">' +
-        '<h1 class="page-title">Formulários</h1>' +
+      '<div class="page-top-bar">' +
+        '<img src="assets/logo.png" alt="IPRA no Ariri" class="page-top-logo" onerror="this.style.display=\'none\'">' +
+        '<h1 class="page-top-title">Formulário</h1>' +
       '</div>' +
-      '<button class="btn btn-primary btn-full" id="new-form-btn">+ Novo formulário</button>' +
-      '<div id="forms-dashboard"></div>' +
+      '<div class="detail-cards">' +
+        '<div class="detail-card new-form-card" id="new-form-card" role="button" tabindex="0" aria-label="Novo formulário">' +
+          '<div class="new-form-card-inner">' +
+            '<span class="detail-card-label" style="margin-bottom:0">Novo<br>formulário:</span>' +
+            '<button class="add-circle-btn" id="new-form-btn" aria-label="Adicionar formulário">' +
+              '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">' +
+                '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>' +
+              '</svg>' +
+            '</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div id="forms-dashboard" class="mt-16"></div>' +
       '<div id="forms-loading" class="text-center mt-24"><div class="spinner"></div></div>';
 
     container.innerHTML = html;
 
-    // Wire up new form button
-    document.getElementById('new-form-btn').addEventListener('click', function () {
-      window.location.hash = '#/forms/new';
+    // Wire up new form card
+    var card = document.getElementById('new-form-card');
+    function goNew() { window.location.hash = '#/forms/new'; }
+    card.addEventListener('click', goNew);
+    card.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goNew(); }
     });
 
-    // Fetch forms from server
+    // Fetch forms
     var base = window.Sync ? window.Sync.getServerUrl() : '';
     var dashboardEl = document.getElementById('forms-dashboard');
     var loadingEl = document.getElementById('forms-loading');
 
     fetch(base + '/api/forms')
       .then(function (res) {
-        if (!res.ok) throw new Error('Erro ao carregar formulários');
+        if (!res.ok) throw new Error('err');
         return res.json();
       })
       .then(function (forms) {
         loadingEl.classList.add('hidden');
-
         if (forms && forms.length > 0) {
-          dashboardEl.innerHTML = buildDashboard(forms);
+          dashboardEl.innerHTML = '<div class="detail-cards">' + buildDashboardCard(forms) + '</div>';
         }
-        // If no forms, dashboard stays empty (hidden)
       })
-      .catch(function () {
-        loadingEl.classList.add('hidden');
-        // Offline or error — no dashboard shown
-      });
+      .catch(function () { loadingEl.classList.add('hidden'); });
   }
 
-  // Expose globally for app.js router
   window.renderFormsPage = renderFormsPage;
 })();

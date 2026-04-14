@@ -1,9 +1,9 @@
 /**
  * IPRA no Ariri — Splash Screen (splash.js)
  *
- * Exibe logo "IPRA no Ariri" centralizado sobre fundo creme (#faf6ee)
- * com elementos em verde escuro (#1a4731).
- * Exibe versículo Marcos 16:15.
+ * Exibe logo "IPRA no Ariri" centralizado com ilustração.
+ * Versículo no canto inferior esquerdo.
+ * Fundo creme com shape diagonal decorativo.
  * Ao tocar/clicar em qualquer área, navega para #/info.
  *
  * Requisitos: 1.1, 1.2, 1.3
@@ -12,19 +12,21 @@
 (function () {
   'use strict';
 
-  /**
-   * Renderiza a Splash Screen no container fornecido.
-   * @param {HTMLElement} container — elemento #app
-   */
   window.renderSplashPage = function (container) {
     container.innerHTML =
       '<div class="splash-screen" id="splash-area" role="button" tabindex="0" aria-label="Toque para continuar">' +
-        '<div class="splash-logo">IPRA no Ariri</div>' +
-        '<p class="splash-verse">' +
-          '\u201CIde ao mundo, pregai o evangelho a toda criatura.\u201D' +
-          '<cite>Marcos 16:15</cite>' +
-        '</p>' +
-        '<p class="splash-tap-hint">Toque para continuar</p>' +
+        '<div class="splash-logo-area">' +
+          '<div class="splash-logo">' +
+            '<img src="assets/logo.png" alt="IPRA no Ariri" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'">' +
+            '<span class="splash-logo-text" style="display:none">IPRA no Ariri</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="splash-verse-area">' +
+          '<p class="splash-verse">' +
+            '"Ide ao mundo, pregai o evangelho<br>a toda criatura."' +
+            '<cite>Marcos 16: 15</cite>' +
+          '</p>' +
+        '</div>' +
       '</div>';
 
     var splashArea = document.getElementById('splash-area');

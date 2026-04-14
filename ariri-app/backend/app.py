@@ -23,6 +23,10 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['UPLOADS_DIR'] = UPLOADS_DIR
 
+    # PIN para áreas protegidas (Prestação de Contas e Dados da Equipe)
+    # Altere este valor para definir a senha de acesso
+    app.config['ACCESS_PIN'] = os.environ.get('ARIRI_PIN', '1234')
+
     # Initialize extensions
     db.init_app(app)
     CORS(app)
@@ -68,6 +72,7 @@ def _register_blueprints(app):
     """Register route blueprints. Skips any that aren't implemented yet."""
     blueprint_imports = [
         ('routes.ping', 'ping_bp'),
+        ('routes.pin', 'pin_bp'),
         ('routes.forms', 'forms_bp'),
         ('routes.posts', 'posts_bp'),
         ('routes.receipts', 'receipts_bp'),

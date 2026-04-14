@@ -78,6 +78,7 @@ def _sync_form(item_id, data, created_at):
         locality=data.get('locality'),
         description=data.get('description'),
         image_path=image_path,
+        people_served=int(data.get('people_served', 1) or 1),
         created_at=created_at,
     )
     db.session.add(form)

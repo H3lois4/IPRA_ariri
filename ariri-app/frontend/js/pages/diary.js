@@ -1,20 +1,16 @@
 /**
- * diary.js — Página do Diário de Bordo (feed de postagens)
+ * diary.js — Página do Diário de Bordo
  *
- * Exibe feed ordenado por data decrescente (mais recente primeiro).
- * Cada postagem com: avatar/inicial do autor, nome, data, imagem, título e descrição.
- * Botão "+ Nova postagem" no topo.
+ * Layout: logo (esquerda) + "Diário de Bordo" (direita) no topo.
+ * Card "Nova postagem:" com botão + circular verde.
+ * Feed de postagens sem avatar/foto de perfil.
+ * Cada post: nome (esquerda) + data (direita), imagem, título, descrição.
  *
  * Requisitos: 7.1, 7.2
  */
 (function () {
   'use strict';
 
-  /**
-   * Format an ISO date string to a human-readable Brazilian format.
-   * @param {string} isoStr
-   * @returns {string}
-   */
   function formatDate(isoStr) {
     if (!isoStr) return '';
     try {
@@ -25,120 +21,90 @@
       var year = d.getFullYear();
       var hours = String(d.getHours()).padStart(2, '0');
       var minutes = String(d.getMinutes()).padStart(2, '0');
-      return day + '/' + month + '/' + year + ' às ' + hours + ':' + minutes;
-    } catch (e) {
-      return isoStr;
-    }
+      return day + '/' + month + '/' + year + ' ' + hours + ':' + minutes;
+    } catch (e) { return isoStr; }
   }
 
-  /**
-   * Get the first letter of a name for the avatar.
-   * @param {string} name
-   * @returns {string}
-   */
-  function getInitial(name) {
-    if (!name) return '?';
-    return name.charAt(0).toUpperCase();
-  }
-
-  /**
-   * Build HTML for a single post card.
-   * @param {object} post
-   * @param {string} baseUrl
-   * @returns {string}
-   */
   function buildPostCard(post, baseUrl) {
-    var initial = getInitial(post.volunteer_name);
     var authorName = post.volunteer_name || 'Anônimo';
     var dateStr = formatDate(post.created_at);
 
     var imageHtml = '';
     if (post.image_path) {
       var imageUrl = baseUrl + '/uploads/' + post.image_path;
-      imageHtml = '<img class="post-card-image" src="' + imageUrl + '" alt="Imagem da postagem" loading="lazy">';
+      imageHtml = '<img class="diary-post-image" src="' + imageUrl + '" alt="Imagem da postagem" loading="lazy">';
     }
 
-    var html =
-      '<article class="post-card">' +
-        '<div class="post-card-header">' +
-          '<div class="post-avatar" aria-hidden="true">' + initial + '</div>' +
-          '<div class="post-meta">' +
-            '<div class="post-author">' + authorName + '</div>' +
-            '<div class="post-date">' + dateStr + '</div>' +
-          '</div>' +
-        '</div>' +
-        imageHtml +
-        '<div class="post-card-body">' +
-          '<h2 class="post-title">' + (post.title || '') + '</h2>' +
-          '<p class="post-description">' + (post.description || '') + '</p>' +
-        '</div>' +
-      '</article>';
-
-    return html;
+    return '<article class="diary-post-card">' +
+      '<div class="diary-post-header">' +
+        '<span class="diary-post-author">' + authorName + '</span>' +
+        '<span class="diary-post-date">' + dateStr + '</span>' +
+      '</div>' +
+      imageHtml +
+      '<div class="diary-post-body">' +
+        '<h3 class="diary-post-title">' + (post.title || '') + '</h3>' +
+        '<p class="diary-post-desc">' + (post.description || '') + '</p>' +
+      '</div>' +
+    '</article>';
   }
 
-  /**
-   * Render the diary page into the given container.
-   * @param {HTMLElement} container
-   */
   function renderDiaryPage(container) {
     var html =
-      '<div class="page-header">' +
-        '<h1 class="page-title">Diário de Bordo</h1>' +
+      '<div class="page-top-bar">' +
+        '<img src="assets/logo.png" alt="IPRA no Ariri" class="page-top-logo" onerror="this.style.display=\'none\'">' +
+        '<h1 class="page-top-title">Diário de Bordo</h1>' +
       '</div>' +
-      '<button class="btn btn-primary btn-full" id="new-post-btn">+ Nova postagem</button>' +
+      '<div class="detail-cards">' +
+        '<div class="detail-card new-form-card" id="new-post-card" role="button" tabindex="0" aria-label="Nova postagem">' +
+          '<div class="new-form-card-inner">' +
+            '<span class="detail-card-label" style="margin-bottom:0">Nova<br>postagem:</span>' +
+            '<button class="add-circle-btn" aria-label="Adicionar postagem">' +
+              '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
+            '</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
       '<div id="diary-feed" class="mt-16"></div>' +
       '<div id="diary-loading" class="text-center mt-24"><div class="spinner"></div></div>';
 
     container.innerHTML = html;
 
-    // Wire up new post button
-    document.getElementById('new-post-btn').addEventListener('click', function () {
-      window.location.hash = '#/diary/new';
+    var card = document.getElementById('new-post-card');
+    function goNew() { window.location.hash = '#/diary/new'; }
+    card.addEventListener('click', goNew);
+    card.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goNew(); }
     });
 
-    // Fetch posts from server
     var base = window.Sync ? window.Sync.getServerUrl() : '';
     var feedEl = document.getElementById('diary-feed');
     var loadingEl = document.getElementById('diary-loading');
 
     fetch(base + '/api/posts')
       .then(function (res) {
-        if (!res.ok) throw new Error('Erro ao carregar postagens');
+        if (!res.ok) throw new Error('err');
         return res.json();
       })
       .then(function (posts) {
         loadingEl.classList.add('hidden');
-
         if (!posts || posts.length === 0) {
           feedEl.innerHTML =
             '<div class="empty-state">' +
-              '<svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">' +
-                '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>' +
-                '<path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>' +
-              '</svg>' +
               '<p class="empty-state-text">Nenhuma postagem ainda.<br>Seja o primeiro a compartilhar!</p>' +
             '</div>';
           return;
         }
-
-        // Posts are already ordered by created_at desc from the API
-        var feedHtml = '<div class="feed">';
-        posts.forEach(function (post) {
-          feedHtml += buildPostCard(post, base);
-        });
+        var feedHtml = '<div class="diary-feed-list">';
+        posts.forEach(function (post) { feedHtml += buildPostCard(post, base); });
         feedHtml += '</div>';
         feedEl.innerHTML = feedHtml;
       })
       .catch(function () {
         loadingEl.classList.add('hidden');
         feedEl.innerHTML =
-          '<div class="empty-state">' +
-            '<p class="empty-state-text">Não foi possível carregar as postagens.<br>Verifique a conexão.</p>' +
-          '</div>';
+          '<div class="empty-state"><p class="empty-state-text">Não foi possível carregar as postagens.</p></div>';
       });
   }
 
-  // Expose globally for app.js router
   window.renderDiaryPage = renderDiaryPage;
 })();

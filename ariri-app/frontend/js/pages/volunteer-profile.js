@@ -1,20 +1,27 @@
 /**
- * volunteer-profile.js — Página de perfil completo do voluntário
+ * volunteer-profile.js — Perfil completo do voluntário
  *
- * Exibe perfil completo: foto, nome, RG, CPF, data de nascimento,
- * sexo, profissão, e-mail, telefone, endereço, termos e dados médicos.
- * Busca dados via GET /api/volunteers/{id}.
+ * Layout: botão voltar + logo no topo, avatar + nome,
+ * dados pessoais em lista simples, termos e dados médicos.
  *
  * Requisitos: 9.4
  */
 (function () {
   'use strict';
 
-  /**
-   * Format an ISO date string (YYYY-MM-DD) to DD/MM/YYYY.
-   * @param {string|null} dateStr
-   * @returns {string}
-   */
+  var backArrowSvg =
+    '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" ' +
+    'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<circle cx="12" cy="12" r="10"/><polyline points="14 8 10 12 14 16"/></svg>';
+
+  var docSvg =
+    '<svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>' +
+      '<polyline points="14 2 14 8 20 8"/>' +
+      '<polyline points="8 16 12 12 16 16"/>' +
+      '<line x1="12" y1="12" x2="12" y2="20"/>' +
+    '</svg>';
+
   function formatDate(dateStr) {
     if (!dateStr) return '—';
     var parts = dateStr.split('-');
@@ -22,11 +29,6 @@
     return parts[2] + '/' + parts[1] + '/' + parts[0];
   }
 
-  /**
-   * Escape HTML special characters.
-   * @param {string} str
-   * @returns {string}
-   */
   function esc(str) {
     if (!str) return '—';
     var div = document.createElement('div');
@@ -34,71 +36,23 @@
     return div.innerHTML;
   }
 
-  /**
-   * Build a single profile field row.
-   * @param {string} label
-   * @param {string} value
-   * @returns {string}
-   */
-  function buildField(label, value) {
-    return (
-      '<div class="profile-field">' +
-        '<span class="profile-field-label">' + esc(label) + '</span>' +
-        '<span class="profile-field-value">' + (value || '—') + '</span>' +
-      '</div>'
-    );
-  }
-
-  /**
-   * Build a document link/image element for terms or medical data.
-   * @param {string|null} path
-   * @param {string} baseUrl
-   * @param {string} altText
-   * @returns {string}
-   */
-  function buildDocumentLink(path, baseUrl, altText) {
-    if (!path) return '—';
-    var url = baseUrl + '/uploads/' + path;
-    var ext = path.split('.').pop().toLowerCase();
-    var imageExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'];
-
-    if (imageExts.indexOf(ext) !== -1) {
-      return '<a href="' + url + '" target="_blank" rel="noopener">' +
-        '<img src="' + url + '" alt="' + esc(altText) + '" ' +
-        'style="max-width:100%;border-radius:8px;margin-top:4px" loading="lazy">' +
-      '</a>';
-    }
-    return '<a href="' + url + '" target="_blank" rel="noopener" ' +
-      'class="btn btn-secondary btn-full mt-8">Ver documento</a>';
-  }
-
-  /**
-   * Render the volunteer profile page.
-   * @param {HTMLElement} container
-   * @param {object} params - Route params with params.id
-   */
   function renderVolunteerProfilePage(container, params) {
     var volunteerId = params && params.id;
 
-    // Back button + loading state
     container.innerHTML =
-      '<button class="back-btn" id="profile-back-btn">' +
-        '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>' +
-        'Voltar' +
-      '</button>' +
-      '<div id="profile-content">' +
-        '<div class="spinner"></div>' +
-      '</div>';
+      '<div class="page-top-bar">' +
+        '<button class="back-circle-btn" id="profile-back">' + backArrowSvg + '</button>' +
+        '<img src="assets/logo.png" alt="IPRA no Ariri" class="page-top-logo" onerror="this.style.display=\'none\'">' +
+      '</div>' +
+      '<div id="profile-content"><div class="spinner"></div></div>';
 
-    document.getElementById('profile-back-btn').addEventListener('click', function () {
+    document.getElementById('profile-back').addEventListener('click', function () {
       window.location.hash = '#/menu/team';
     });
 
     if (!volunteerId) {
       document.getElementById('profile-content').innerHTML =
-        '<div class="empty-state">' +
-          '<p class="empty-state-text">Voluntário não encontrado.</p>' +
-        '</div>';
+        '<div class="empty-state"><p class="empty-state-text">Voluntário não encontrado.</p></div>';
       return;
     }
 
@@ -113,55 +67,41 @@
         var contentEl = document.getElementById('profile-content');
         if (!contentEl) return;
 
-        // Avatar
-        var avatarHtml;
+        var initial = (v.full_name || '?').charAt(0).toUpperCase();
+        var avatarHtml = '<div class="vol-profile-avatar">' + initial + '</div>';
         if (v.profile_image) {
-          var imgUrl = base + '/uploads/' + v.profile_image;
-          avatarHtml = '<img class="profile-avatar" src="' + imgUrl + '" alt="' + esc(v.full_name) + '" loading="lazy">';
-        } else {
-          var initial = (v.full_name || '?').charAt(0).toUpperCase();
-          avatarHtml = '<div class="profile-avatar">' + initial + '</div>';
+          avatarHtml = '<img class="vol-profile-avatar" src="' + base + '/uploads/' + v.profile_image + '" alt="' + esc(v.full_name) + '">';
         }
 
         var html =
-          // Profile header
-          '<div class="profile-header">' +
+          '<div class="vol-profile-header">' +
             avatarHtml +
-            '<h1 class="profile-name">' + esc(v.full_name) + '</h1>' +
+            '<span class="vol-profile-name">' + esc(v.full_name) + '</span>' +
           '</div>' +
-
-          // Personal info section
-          '<div class="profile-section">' +
-            '<h2 class="profile-section-title">Dados Pessoais</h2>' +
-            buildField('RG', esc(v.rg)) +
-            buildField('CPF', esc(v.cpf)) +
-            buildField('Data de Nascimento', formatDate(v.birth_date)) +
-            buildField('Sexo', esc(v.gender)) +
-            buildField('Profissão', esc(v.profession)) +
+          '<div class="vol-profile-data">' +
+            '<p>' + esc(v.rg) + '</p>' +
+            '<p>' + esc(v.cpf) + '</p>' +
+            '<p>' + formatDate(v.birth_date) + '</p>' +
+            '<p>' + esc(v.gender) + '</p>' +
+            '<p>' + esc(v.profession) + '</p>' +
+            '<p>' + esc(v.email) + '</p>' +
+            '<p>' + esc(v.phone) + '</p>' +
+            '<p>' + esc(v.address) + '</p>' +
           '</div>' +
-
-          // Contact section
-          '<div class="profile-section">' +
-            '<h2 class="profile-section-title">Contato</h2>' +
-            buildField('E-mail', esc(v.email)) +
-            buildField('Telefone', esc(v.phone)) +
-            buildField('Endereço', esc(v.address)) +
-          '</div>' +
-
-          // Documents section
-          '<div class="profile-section">' +
-            '<h2 class="profile-section-title">Documentos</h2>' +
-            '<div class="profile-field" style="flex-direction:column;gap:4px">' +
-              '<span class="profile-field-label">Termos</span>' +
-              '<span class="profile-field-value" style="max-width:100%;text-align:left">' +
-                buildDocumentLink(v.terms_path, base, 'Termos') +
-              '</span>' +
+          '<div class="vol-profile-docs">' +
+            '<p class="form-section-label">Termos assinados:</p>' +
+            '<div class="vol-doc-box">' +
+              (v.terms_path
+                ? '<a href="' + base + '/uploads/' + v.terms_path + '" target="_blank" rel="noopener">' + docSvg + '</a>'
+                : docSvg) +
             '</div>' +
-            '<div class="profile-field" style="flex-direction:column;gap:4px">' +
-              '<span class="profile-field-label">Dados Médicos</span>' +
-              '<span class="profile-field-value" style="max-width:100%;text-align:left">' +
-                buildDocumentLink(v.medical_data_path, base, 'Dados Médicos') +
-              '</span>' +
+          '</div>' +
+          '<div class="vol-profile-docs">' +
+            '<p class="form-section-label">Dados médicos:</p>' +
+            '<div class="vol-doc-box">' +
+              (v.medical_data_path
+                ? '<a href="' + base + '/uploads/' + v.medical_data_path + '" target="_blank" rel="noopener">' + docSvg + '</a>'
+                : docSvg) +
             '</div>' +
           '</div>';
 
@@ -169,14 +109,11 @@
       })
       .catch(function () {
         var contentEl = document.getElementById('profile-content');
-        if (!contentEl) return;
-        contentEl.innerHTML =
-          '<div class="empty-state">' +
-            '<p class="empty-state-text">Não foi possível carregar o perfil.<br>Verifique a conexão.</p>' +
-          '</div>';
+        if (contentEl) {
+          contentEl.innerHTML = '<div class="empty-state"><p class="empty-state-text">Não foi possível carregar o perfil.</p></div>';
+        }
       });
   }
 
-  // Expose globally for app.js router
   window.renderVolunteerProfilePage = renderVolunteerProfilePage;
 })();

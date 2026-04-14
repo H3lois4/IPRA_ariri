@@ -16,6 +16,7 @@ class Form(db.Model):
     locality = db.Column(db.String(200))
     description = db.Column(db.Text)
     image_path = db.Column(db.String(500))
+    people_served = db.Column(db.Integer, default=1)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
