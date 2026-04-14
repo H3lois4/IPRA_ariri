@@ -352,6 +352,15 @@
   window.addEventListener('hashchange', navigate);
 
   document.addEventListener('DOMContentLoaded', function () {
+    // Initialize IndexedDB for offline persistence
+    window.DB.init().catch(function (err) {
+      console.error('IndexedDB init failed:', err);
+    });
+
+    // Start sync polling (connectivity check every 30s)
+    window.Sync.start();
+
+    // Perform initial navigation
     navigate();
   });
 })();

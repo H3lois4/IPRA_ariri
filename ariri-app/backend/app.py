@@ -42,6 +42,11 @@ def create_app():
             pass
         db.create_all()
 
+    # Serve uploaded files (images from forms, diary, receipts, volunteer profiles)
+    @app.route('/uploads/<path:filename>')
+    def serve_upload(filename):
+        return send_from_directory(UPLOADS_DIR, filename)
+
     # SPA catch-all: return index.html for any non-API, non-static route
     @app.route('/')
     def serve_index():
