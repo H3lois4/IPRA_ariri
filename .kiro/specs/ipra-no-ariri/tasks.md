@@ -78,21 +78,21 @@ Implementação incremental do app IPRA no Ariri — uma SPA offline-first com b
   - Garantir que todos os testes passam e que o servidor Flask inicia corretamente. Perguntar ao usuário se há dúvidas.
 
 - [ ] 4. Frontend — Estrutura base e roteamento SPA
-  - [-] 4.1 Criar `index.html` com estrutura base
+  - [x] 4.1 Criar `index.html` com estrutura base
     - Incluir meta viewport para mobile-first
     - Incluir link para `css/style.css` e scripts JS
     - Criar container principal `<div id="app">` e Bottom Navigation Bar com 4 ícones (Informações, Formulários, Diário, Menu)
     - Todos os recursos (fontes, ícones) devem ser locais (sem CDN)
     - _Requisitos: 3.1, 14.1, 14.2, 14.3, 15.1, 15.2, 16.2_
 
-  - [~] 4.2 Criar `css/style.css` com estilos base
+  - [x] 4.2 Criar `css/style.css` com estilos base
     - Paleta de cores: verde escuro (#1a4731) e creme (#faf6ee)
     - Tipografia sans-serif, design minimalista mobile-first (390px)
     - Estilos da Bottom Navigation Bar com destaque do ícone ativo
     - Estilos do indicador de conectividade (online/pendente/offline)
     - _Requisitos: 3.3, 14.1, 14.2, 14.3, 15.1_
 
-  - [~] 4.3 Implementar `js/app.js` — roteador SPA
+  - [x] 4.3 Implementar `js/app.js` — roteador SPA
     - Hash-based routing com mapeamento de rotas para funções de renderização
     - Gerenciar destaque do ícone ativo na Bottom Navigation Bar
     - Suportar rotas com parâmetros (`:day`, `:id`)
