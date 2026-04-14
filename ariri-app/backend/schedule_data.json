@@ -1,0 +1,122 @@
+{
+  "days": [
+    {
+      "id": "sabado",
+      "label": "Sábado",
+      "date": "2025-07-19",
+      "schedule": [
+        { "time": "06:00", "activity": "Chegada e acomodação" },
+        { "time": "07:00", "activity": "Café da manhã" },
+        { "time": "08:00", "activity": "Devocional de abertura" },
+        { "time": "09:00", "activity": "Reconhecimento da comunidade" },
+        { "time": "10:00", "activity": "Atendimento odontológico" },
+        { "time": "12:00", "activity": "Almoço" },
+        { "time": "14:00", "activity": "Atividades infantis e evangelismo" },
+        { "time": "16:00", "activity": "Visitas domiciliares" },
+        { "time": "18:00", "activity": "Jantar" },
+        { "time": "19:30", "activity": "Culto comunitário" },
+        { "time": "21:00", "activity": "Reunião da equipe e oração" }
+      ],
+      "menu": {
+        "breakfast": "Pão caseiro, café, leite, frutas da região",
+        "lunch": "Arroz, feijão, frango assado, salada, suco natural",
+        "dinner": "Sopa de legumes com macarrão, pão"
+      },
+      "materials": [
+        "Bíblias e Novos Testamentos",
+        "Kit odontológico (escovas, pasta, fio dental)",
+        "Material infantil (lápis de cor, papel, tesoura)",
+        "Equipamento de som portátil",
+        "Caixa de primeiros socorros"
+      ]
+    },
+    {
+      "id": "domingo",
+      "label": "Domingo",
+      "date": "2025-07-20",
+      "schedule": [
+        { "time": "07:00", "activity": "Café da manhã" },
+        { "time": "08:00", "activity": "Devocional e louvor" },
+        { "time": "09:00", "activity": "Escola Bíblica para crianças" },
+        { "time": "10:00", "activity": "Atendimento médico e odontológico" },
+        { "time": "12:00", "activity": "Almoço comunitário" },
+        { "time": "14:00", "activity": "Oficina de artesanato" },
+        { "time": "15:30", "activity": "Distribuição de cestas básicas" },
+        { "time": "17:00", "activity": "Atividades recreativas com jovens" },
+        { "time": "18:00", "activity": "Jantar" },
+        { "time": "19:30", "activity": "Sessão de cinema ao ar livre" },
+        { "time": "21:00", "activity": "Reunião da equipe e oração" }
+      ],
+      "menu": {
+        "breakfast": "Tapioca, café, suco de frutas, bolo",
+        "lunch": "Arroz, feijão tropeiro, carne de panela, farofa, salada",
+        "dinner": "Cachorro-quente, suco"
+      },
+      "materials": [
+        "Material para Escola Bíblica (folhetos, adesivos)",
+        "Cestas básicas para distribuição",
+        "Material de artesanato (miçangas, linhas, tecidos)",
+        "Projetor e tela para cinema",
+        "Bolas e jogos recreativos"
+      ]
+    },
+    {
+      "id": "segunda",
+      "label": "Segunda",
+      "date": "2025-07-21",
+      "schedule": [
+        { "time": "07:00", "activity": "Café da manhã" },
+        { "time": "08:00", "activity": "Devocional" },
+        { "time": "09:00", "activity": "Mutirão de limpeza na comunidade" },
+        { "time": "10:30", "activity": "Atendimento odontológico" },
+        { "time": "12:00", "activity": "Almoço" },
+        { "time": "14:00", "activity": "Corte de cabelo solidário" },
+        { "time": "15:00", "activity": "Roda de conversa com moradores" },
+        { "time": "16:30", "activity": "Atividades infantis" },
+        { "time": "18:00", "activity": "Jantar" },
+        { "time": "19:30", "activity": "Culto e testemunhos" },
+        { "time": "21:00", "activity": "Reunião da equipe e oração" }
+      ],
+      "menu": {
+        "breakfast": "Pão com manteiga, café, mingau de aveia, frutas",
+        "lunch": "Arroz, feijão, peixe frito, pirão, vinagrete",
+        "dinner": "Caldo de feijão com torradas"
+      },
+      "materials": [
+        "Sacos de lixo e luvas para mutirão",
+        "Kit de corte de cabelo (tesouras, máquinas, capas)",
+        "Material infantil (giz de cera, massinha, livros)",
+        "Violão e hinários",
+        "Kit odontológico de reposição"
+      ]
+    },
+    {
+      "id": "terca",
+      "label": "Terça",
+      "date": "2025-07-22",
+      "schedule": [
+        { "time": "07:00", "activity": "Café da manhã" },
+        { "time": "08:00", "activity": "Devocional de encerramento" },
+        { "time": "09:00", "activity": "Últimos atendimentos e visitas" },
+        { "time": "10:30", "activity": "Entrega de lembrancinhas às famílias" },
+        { "time": "12:00", "activity": "Almoço de confraternização" },
+        { "time": "14:00", "activity": "Organização e limpeza do local" },
+        { "time": "15:00", "activity": "Culto de encerramento com a comunidade" },
+        { "time": "16:30", "activity": "Despedida e fotos" },
+        { "time": "17:00", "activity": "Partida da equipe" }
+      ],
+      "menu": {
+        "breakfast": "Cuscuz, café, suco, frutas",
+        "lunch": "Churrasco comunitário, arroz, farofa, salada, refrigerante",
+        "dinner": "—"
+      },
+      "materials": [
+        "Lembrancinhas para as famílias (cartões, brindes)",
+        "Material de limpeza (vassouras, panos, detergente)",
+        "Sacolas para organização da bagagem",
+        "Câmera ou celular para fotos de encerramento",
+        "Formulários de feedback da missão"
+      ]
+    }
+  ]
+}
