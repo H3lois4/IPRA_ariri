@@ -249,22 +249,29 @@
    */
   function sendOnline(volunteerName, actions, fullName, age, locality, description, imageFile) {
     var base = window.Sync ? window.Sync.getServerUrl() : '';
-    var formData = new FormData();
 
-    formData.append('volunteer_name', volunteerName);
-    formData.append('actions', JSON.stringify(actions));
-    formData.append('full_name', fullName);
-    if (age) formData.append('age', age);
-    formData.append('locality', locality);
-    formData.append('description', description);
-    if (imageFile) formData.append('image', imageFile);
+    var imagePromise = (imageFile && window.resizeImage)
+      ? window.resizeImage(imageFile)
+      : Promise.resolve(imageFile);
 
-    return fetch(base + '/api/forms', {
-      method: 'POST',
-      body: formData
-    }).then(function (res) {
-      if (!res.ok) throw new Error('Erro ao enviar formulário: ' + res.status);
-      return res.json();
+    return imagePromise.then(function (processedImage) {
+      var formData = new FormData();
+
+      formData.append('volunteer_name', volunteerName);
+      formData.append('actions', JSON.stringify(actions));
+      formData.append('full_name', fullName);
+      if (age) formData.append('age', age);
+      formData.append('locality', locality);
+      formData.append('description', description);
+      if (processedImage) formData.append('image', processedImage, 'image.jpg');
+
+      return fetch(base + '/api/forms', {
+        method: 'POST',
+        body: formData
+      }).then(function (res) {
+        if (!res.ok) throw new Error('Erro ao enviar formulário: ' + res.status);
+        return res.json();
+      });
     });
   }
 
@@ -273,24 +280,30 @@
    * Image is stored as base64 data URL.
    */
   function saveOffline(volunteerName, actions, fullName, age, locality, description, imageFile) {
-    var dataPromise = imageFile
-      ? readFileAsBase64(imageFile)
-      : Promise.resolve(null);
+    var resizePromise = (imageFile && window.resizeImage)
+      ? window.resizeImage(imageFile)
+      : Promise.resolve(imageFile);
 
-    return dataPromise.then(function (imageBase64) {
-      var formData = {
-        volunteer_name: volunteerName,
-        actions: actions,
-        full_name: fullName,
-        age: age ? parseInt(age, 10) : null,
-        locality: locality,
-        description: description,
-        image: imageBase64
-      };
+    return resizePromise.then(function (processedImage) {
+      var dataPromise = processedImage
+        ? readFileAsBase64(processedImage)
+        : Promise.resolve(null);
 
-      return window.DB.addPending('pending_forms', {
-        type: 'form',
-        data: formData
+      return dataPromise.then(function (imageBase64) {
+        var formData = {
+          volunteer_name: volunteerName,
+          actions: actions,
+          full_name: fullName,
+          age: age ? parseInt(age, 10) : null,
+          locality: locality,
+          description: description,
+          image: imageBase64
+        };
+
+        return window.DB.addPending('pending_forms', {
+          type: 'form',
+          data: formData
+        });
       });
     });
   }
