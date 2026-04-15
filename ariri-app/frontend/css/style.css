@@ -48,7 +48,7 @@ a {
   --green: #1a4731;
   --green-light: #2d6b4a;
   --cream: #faf6ee;
-  --cream-dark: #f0ead8;
+  --cream-dark: #ede7d3;
   --white: #ffffff;
   --text-primary: #1a1a1a;
   --text-secondary: #6b6b6b;
@@ -62,7 +62,7 @@ a {
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
 
-  --nav-height: 64px;
+  --nav-height: 60px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
@@ -115,24 +115,24 @@ body {
    ============================================ */
 .connectivity-indicator {
   position: fixed;
-  top: 12px;
-  right: 12px;
+  top: 8px;
+  right: 8px;
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 11px;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 16px;
+  font-size: 10px;
   font-weight: 600;
   z-index: 1000;
-  background: var(--white);
-  box-shadow: var(--shadow);
+  background: rgba(255,255,255,0.85);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   transition: opacity 0.3s ease;
 }
 
 .connectivity-dot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -227,25 +227,16 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: var(--cream);
+  background-color: #faf6ee;
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
   overflow: hidden;
 }
 
-/* Diagonal decorative shape */
+/* Diagonal decorative shape — disabled on splash for clean bg */
 .splash-screen::before {
-  content: '';
-  position: absolute;
-  top: -20%;
-  left: -30%;
-  width: 120%;
-  height: 80%;
-  background: rgba(255, 255, 255, 0.35);
-  transform: rotate(-15deg);
-  border-radius: 0 0 60% 0;
-  pointer-events: none;
+  display: none;
 }
 
 .splash-logo-area {
@@ -256,6 +247,8 @@ body {
   position: relative;
   z-index: 1;
   padding: 32px;
+  padding-bottom: 0;
+  margin-top: -60px;
 }
 
 .splash-logo {
@@ -265,8 +258,8 @@ body {
 }
 
 .splash-logo img {
-  max-width: 260px;
-  width: 100%;
+  max-width: 320px;
+  width: 85%;
   height: auto;
 }
 
@@ -282,12 +275,13 @@ body {
   z-index: 1;
   padding: 0 28px 48px;
   text-align: left;
+  margin-top: -60px;
 }
 
 .splash-verse {
   font-size: 16px;
   font-style: italic;
-  color: var(--text-primary);
+  color: var(--green);
   line-height: 1.5;
   max-width: 300px;
 }
@@ -298,7 +292,7 @@ body {
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--green);
 }
 
 .splash-tap-hint {
@@ -335,24 +329,24 @@ body {
    ============================================ */
 .page-top-bar {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   gap: 12px;
+  min-height: 50px;
 }
 
 .page-top-logo {
-  width: 120px;
+  width: 80px;
   height: auto;
   flex-shrink: 0;
 }
 
 .page-top-title {
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 800;
   color: var(--green);
   text-align: right;
-  padding-top: 8px;
 }
 
 /* ============================================
@@ -367,8 +361,8 @@ body {
 .info-day-card {
   background: var(--cream-dark);
   border-radius: var(--radius);
-  padding: 24px 20px;
-  min-height: 100px;
+  padding: 20px 20px;
+  min-height: 90px;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   display: flex;
@@ -380,9 +374,9 @@ body {
 }
 
 .info-day-label {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--green);
 }
 
 /* ============================================
@@ -559,10 +553,10 @@ body {
    Form Page (new design)
    ============================================ */
 .form-page-title {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 16px;
+  color: var(--green);
+  margin-bottom: 14px;
 }
 
 .form-section {
@@ -572,7 +566,7 @@ body {
 .form-section-label {
   font-size: 14px;
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--green);
   margin-bottom: 10px;
 }
 
@@ -1022,27 +1016,20 @@ body {
 .menu-simple-list {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 12px;
 }
 
 .menu-simple-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 20px;
+  padding: 20px 20px;
   background: var(--cream-dark);
   cursor: pointer;
   transition: background-color 0.15s ease;
   font-size: 15px;
-  color: var(--text-primary);
-}
-
-.menu-simple-item:first-child {
-  border-radius: var(--radius) var(--radius) 0 0;
-}
-
-.menu-simple-item:last-child {
-  border-radius: 0 0 var(--radius) var(--radius);
+  color: var(--green);
+  border-radius: var(--radius);
 }
 
 .menu-simple-item:active {
@@ -1188,8 +1175,8 @@ body {
    Day Detail Page
    ============================================ */
 .back-circle-btn {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border: none;
   background: none;
   cursor: pointer;
@@ -1209,7 +1196,7 @@ body {
 .day-detail-day-name {
   font-size: 16px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--green);
   margin-bottom: 12px;
 }
 
@@ -1222,14 +1209,14 @@ body {
 .detail-card {
   background: var(--cream-dark);
   border-radius: var(--radius);
-  padding: 20px;
-  min-height: 120px;
+  padding: 18px 20px;
+  min-height: 100px;
 }
 
 .detail-card-label {
   font-size: 15px;
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--green);
   margin-bottom: 12px;
 }
 

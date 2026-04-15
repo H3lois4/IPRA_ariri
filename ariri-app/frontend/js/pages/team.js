@@ -38,7 +38,6 @@
     container.innerHTML =
       '<div class="page-top-bar">' +
         '<button class="back-circle-btn" id="team-back">' + backArrowSvg + '</button>' +
-        '<img src="assets/logo.png" alt="IPRA no Ariri" class="page-top-logo" onerror="this.style.display=\'none\'">' +
       '</div>' +
       '<div class="pin-screen">' +
         '<h1 class="pin-title">Dados da Equipe</h1>' +

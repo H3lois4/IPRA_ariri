@@ -109,16 +109,28 @@
 
   // ─── Roteador principal ───
 
+  var _splashShown = false;
+
   function navigate() {
     var hash = window.location.hash || '';
     var appContainer = document.getElementById('app');
     if (!appContainer) return;
 
-    // Verificar identificação do voluntário (exceto na splash)
+    // Sempre mostrar splash na primeira navegação da sessão
+    if (!_splashShown && (hash === '' || hash === '#' || hash === '#/')) {
+      _splashShown = true;
+      setBottomNavVisible(false);
+      updateActiveNav(null);
+      renderSplash(appContainer);
+      return;
+    }
+
+    // Após splash, verificar identificação do voluntário
     if (hash !== '' && hash !== '#' && hash !== '#/') {
+      _splashShown = true; // marca splash como vista se navegou direto
       var volunteerName = localStorage.getItem('volunteer_name');
       if (!volunteerName) {
-        renderIdentification(appContainer);
+        renderIdentification(appContainer, hash);
         setBottomNavVisible(false);
         updateActiveNav(null);
         return;
@@ -150,7 +162,7 @@
 
   // ─── Tela de identificação do voluntário ───
 
-  function renderIdentification(container) {
+  function renderIdentification(container, targetHash) {
     container.innerHTML =
       '<div class="identify-screen">' +
         '<h1 class="identify-title">Bem-vindo ao IPRA no Ariri</h1>' +
@@ -352,15 +364,14 @@
   window.addEventListener('hashchange', navigate);
 
   document.addEventListener('DOMContentLoaded', function () {
-    // Initialize IndexedDB for offline persistence
     window.DB.init().catch(function (err) {
       console.error('IndexedDB init failed:', err);
     });
-
-    // Start sync polling (connectivity check every 30s)
     window.Sync.start();
 
-    // Perform initial navigation
+    // Always start with splash
+    window.location.hash = '';
+    _splashShown = false;
     navigate();
   });
 })();

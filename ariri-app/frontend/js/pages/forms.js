@@ -156,9 +156,14 @@
         loadingEl.classList.add('hidden');
         if (forms && forms.length > 0) {
           dashboardEl.innerHTML = '<div class="detail-cards">' + buildDashboardCard(forms) + '</div>';
+        } else {
+          dashboardEl.innerHTML = '<div class="detail-cards"><div class="detail-card"><p class="detail-card-label">Dashboard:</p><div class="detail-card-content"><p class="text-muted" style="text-align:center;padding:24px 0">Nenhum dado ainda</p></div></div></div>';
         }
       })
-      .catch(function () { loadingEl.classList.add('hidden'); });
+      .catch(function () {
+        loadingEl.classList.add('hidden');
+        dashboardEl.innerHTML = '<div class="detail-cards"><div class="detail-card"><p class="detail-card-label">Dashboard:</p><div class="detail-card-content"><p class="text-muted" style="text-align:center;padding:24px 0">Nenhum dado ainda</p></div></div></div>';
+      });
   }
 
   window.renderFormsPage = renderFormsPage;
