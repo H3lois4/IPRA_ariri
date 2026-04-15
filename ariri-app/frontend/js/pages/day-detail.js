@@ -26,14 +26,29 @@
 
   function fetchSchedule() {
     if (_scheduleCache) return Promise.resolve(_scheduleCache);
+
+    // Try localStorage first (offline support)
+    var cached = localStorage.getItem('schedule_data');
+    if (cached) {
+      try { _scheduleCache = JSON.parse(cached); } catch (e) { /* ignore */ }
+    }
+
     var base = window.Sync ? window.Sync.getServerUrl() : '';
     return fetch(base + '/api/schedule')
       .then(function (res) {
         if (!res.ok) throw new Error('HTTP ' + res.status);
         return res.json();
       })
-      .then(function (data) { _scheduleCache = data; return data; })
-      .catch(function () { return null; });
+      .then(function (data) {
+        _scheduleCache = data;
+        // Save to localStorage for offline use
+        try { localStorage.setItem('schedule_data', JSON.stringify(data)); } catch (e) { /* ignore */ }
+        return data;
+      })
+      .catch(function () {
+        // Return cached data if available
+        return _scheduleCache || null;
+      });
   }
 
   function findDay(data, dayId) {

@@ -60,12 +60,20 @@
 
     btn.disabled = true; btn.textContent = 'Publicando...';
     var check = (window.Sync && window.Sync.ping) ? window.Sync.ping() : Promise.resolve(false);
-    check.then(function (on) { return on ? sendOn(vol, title, desc, imgFile) : saveOff(vol, title, desc, imgFile); })
-      .then(function () { toast('Postagem publicada!', false); window.location.hash = '#/diary'; })
-      .catch(function (err) {
+    check.then(function (on) {
+      if (on) {
+        return sendOn(vol, title, desc, imgFile).then(function () {
+          toast('Postagem publicada com sucesso!', false); window.location.hash = '#/diary';
+        });
+      } else {
+        return saveOff(vol, title, desc, imgFile).then(function () {
+          toast('Postagem salva: aguardando conexão para o envio', false); window.location.hash = '#/diary';
+        });
+      }
+    }).catch(function (err) {
         console.error('Post submit error:', err);
         saveOff(vol, title, desc, imgFile).then(function () {
-          toast('Salvo localmente.', false); window.location.hash = '#/diary';
+          toast('Postagem salva: aguardando conexão para o envio', false); window.location.hash = '#/diary';
         }).catch(function (err2) {
           console.error('Offline save error:', err2);
           toast('Erro ao publicar.', true); btn.disabled = false; btn.textContent = 'Publicar';

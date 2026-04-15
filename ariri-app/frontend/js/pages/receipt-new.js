@@ -84,12 +84,20 @@
     btn.disabled = true; btn.textContent = 'Enviando...';
 
     var check = (window.Sync && window.Sync.ping) ? window.Sync.ping() : Promise.resolve(false);
-    check.then(function (on) { return on ? sendOn(title, desc, imgFile) : saveOff(title, desc, imgFile); })
-      .then(function () { toast('Comprovante enviado!', false); window.location.hash = '#/menu/accounts'; })
-      .catch(function (err) {
+    check.then(function (on) {
+      if (on) {
+        return sendOn(title, desc, imgFile).then(function () {
+          toast('Comprovante enviado com sucesso!', false); window.location.hash = '#/menu/accounts';
+        });
+      } else {
+        return saveOff(title, desc, imgFile).then(function () {
+          toast('Comprovante salvo: aguardando conexão para o envio', false); window.location.hash = '#/menu/accounts';
+        });
+      }
+    }).catch(function (err) {
         console.error('Receipt submit error:', err);
         saveOff(title, desc, imgFile).then(function () {
-          toast('Salvo localmente.', false); window.location.hash = '#/menu/accounts';
+          toast('Comprovante salvo: aguardando conexão para o envio', false); window.location.hash = '#/menu/accounts';
         }).catch(function (err2) {
           console.error('Offline save error:', err2);
           toast('Erro ao enviar.', true); btn.disabled = false; btn.textContent = 'Enviar';
