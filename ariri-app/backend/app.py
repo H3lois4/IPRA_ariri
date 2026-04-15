@@ -13,7 +13,12 @@ UPLOADS_DIR = os.path.join(BASE_DIR, 'uploads')
 def create_app():
     app = Flask(__name__, static_folder=None)
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(BASE_DIR, 'ariri.db')
+    # Database: use DATABASE_URL env var (Render/PostgreSQL) or SQLite locally
+    database_url = os.environ.get('DATABASE_URL', 'sqlite:///' + os.path.join(BASE_DIR, 'ariri.db'))
+    # Render uses postgres:// but SQLAlchemy needs postgresql://
+    if database_url.startswith('postgres://'):
+        database_url = database_url.replace('postgres://', 'postgresql://', 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['UPLOADS_DIR'] = UPLOADS_DIR
     app.config['ACCESS_PIN'] = os.environ.get('ARIRI_PIN', '1234')

@@ -29,7 +29,7 @@ const Sync = (() => {
    * @returns {string}
    */
   function getServerUrl() {
-    return localStorage.getItem(LS_KEY) || '';
+    return localStorage.getItem(LS_KEY) || window.API_BASE_URL || '';
   }
 
   /**

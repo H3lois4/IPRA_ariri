@@ -4,6 +4,7 @@ var STATIC_FILES = [
   '/index.html',
   '/css/style.css',
   '/js/db.js',
+  '/js/config.js',
   '/js/sync.js',
   '/js/resize.js',
   '/js/offline-cache.js',
