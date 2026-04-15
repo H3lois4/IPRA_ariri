@@ -5,8 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>IPRA no Ariri</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a4731">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="assets/logo.png">
 </head>
 <body>
+    <!-- Registro do Service Worker -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js', { scope: '/' }).then(function(reg) {
+            console.log('SW registrado:', reg.scope);
+          }).catch(function(err) {
+            console.log('SW erro (normal em HTTP):', err);
+          });
+        });
+      }
+    </script>
     <!-- Indicador de conectividade -->
     <div id="connectivity-indicator" class="connectivity-indicator offline" title="Status da conexão">
         <span class="connectivity-dot"></span>
@@ -68,6 +85,7 @@
     <script src="js/pages/receipt-new.js"></script>
     <script src="js/pages/team.js"></script>
     <script src="js/pages/volunteer-profile.js"></script>
+    <script src="js/offline-cache.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
