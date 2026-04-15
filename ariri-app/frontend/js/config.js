@@ -1,10 +1,6 @@
 /**
  * config.js — Configuração do servidor API
- * 
- * Altere API_BASE_URL para a URL do seu backend no Render.
- * Exemplo: 'https://ipra-ariri-api.onrender.com'
- * 
- * Deixe vazio ('') para usar o mesmo servidor (desenvolvimento local).
+ * URL do backend hospedado no Render.
  */
 var API_BASE_URL = 'https://ipra-ariri.onrender.com';
 
