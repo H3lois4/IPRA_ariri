@@ -34,6 +34,7 @@
     { pattern: '#/menu/accounts',        render: renderAccounts },
     { pattern: '#/menu/accounts/new',    render: renderNewReceipt },
     { pattern: '#/menu/team',            render: renderTeam },
+    { pattern: '#/menu/team/new',        render: renderNewVolunteer },
     { pattern: '#/menu/team/:id',        render: renderVolunteerProfile }
   ];
 
@@ -336,6 +337,14 @@
       '</button>' +
       '<div class="page-header"><h1 class="page-title">Dados da Equipe</h1></div>' +
       '<p class="text-muted">Dados da equipe — em construção.</p>';
+  }
+
+  function renderNewVolunteer(container, params) {
+    if (typeof window.renderNewVolunteerPage === 'function') {
+      window.renderNewVolunteerPage(container, params);
+      return;
+    }
+    container.innerHTML = '<p class="text-muted">Novo voluntário — em construção.</p>';
   }
 
   function renderVolunteerProfile(container, params) {

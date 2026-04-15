@@ -84,3 +84,18 @@ def list_posts():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@posts_bp.route('/api/posts/<string:post_id>', methods=['DELETE'])
+def delete_post(post_id):
+    """Exclui uma postagem pelo ID."""
+    try:
+        post = db.session.get(Post, post_id)
+        if not post:
+            return jsonify({"error": "Postagem não encontrada"}), 404
+        db.session.delete(post)
+        db.session.commit()
+        return jsonify({"deleted": post_id}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500

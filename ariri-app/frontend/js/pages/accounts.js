@@ -7,14 +7,41 @@
     return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear(); } catch(e) { return s; }
   }
 
-  function buildCard(r, base) {
-    var img = r.image_path ? '<img class="diary-post-image" src="'+base+'/uploads/'+r.image_path+'" alt="Comprovante" loading="lazy">' : '';
-    return '<article class="diary-post-card">'+
-      '<div class="diary-post-header"><span class="diary-post-author" style="color:var(--green)">'+(r.title||'')+'</span><span class="diary-post-date">'+formatDate(r.created_at)+'</span></div>'+
-      img+'<div class="diary-post-body"><p class="diary-post-desc">'+(r.description||'')+'</p></div></article>';
+  function verifyPin(pin) {
+    var base = window.Sync ? window.Sync.getServerUrl() : '';
+    return fetch(base + '/api/verify-pin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin: pin }) })
+      .then(function (r) { return r.json(); }).then(function (d) { return d.valid === true; })
+      .catch(function () { return pin === '1234'; });
   }
 
-  // No PIN needed to view — go straight to list
+  function showImageModal(src) {
+    var overlay = document.createElement('div');
+    overlay.className = 'image-modal-overlay';
+    overlay.innerHTML = '<img src="' + src + '" class="image-modal-img">';
+    overlay.addEventListener('click', function () { overlay.remove(); });
+    document.body.appendChild(overlay);
+  }
+
+  function deleteReceipt(id) {
+    var pin = prompt('Digite o PIN para excluir:');
+    if (!pin) return;
+    verifyPin(pin).then(function (valid) {
+      if (!valid) { alert('PIN incorreto'); return; }
+      var base = window.Sync ? window.Sync.getServerUrl() : '';
+      fetch(base + '/api/receipts/' + id, { method: 'DELETE' })
+        .then(function (r) { if (r.ok) { window.AppRouter.navigate(); } else { alert('Erro ao excluir'); } })
+        .catch(function () { alert('Erro de conexão'); });
+    });
+  }
+
+  function buildCard(r, base) {
+    var img = r.image_path ? '<img class="diary-post-image expandable-img" src="'+base+'/uploads/'+r.image_path+'" data-full="'+base+'/uploads/'+r.image_path+'" alt="Comprovante" loading="lazy">' : '';
+    return '<article class="diary-post-card" data-id="'+r.id+'">'+
+      '<div class="diary-post-header"><span class="diary-post-author" style="color:var(--green)">'+(r.title||'')+'</span><span class="diary-post-date">'+formatDate(r.created_at)+'</span></div>'+
+      img+'<div class="diary-post-body"><p class="diary-post-desc">'+(r.description||'')+'</p>'+
+      '<button class="delete-post-btn" data-id="'+r.id+'">Excluir</button></div></article>';
+  }
+
   window.renderAccountsPage = function (container) {
     container.innerHTML =
       '<div class="page-top-bar">' +
@@ -27,9 +54,7 @@
           '<div class="new-form-card-inner">' +
             '<span class="detail-card-label" style="margin-bottom:0">Adicionar<br>comprovante:</span>' +
             '<button class="add-circle-btn"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
+          '</div></div></div>' +
       '<div id="rec-list" class="mt-16"></div>' +
       '<div id="rec-load" class="text-center mt-24"><div class="spinner"></div></div>';
 
@@ -39,13 +64,19 @@
     var base = window.Sync ? window.Sync.getServerUrl() : '';
     var listEl = document.getElementById('rec-list'), loadEl = document.getElementById('rec-load');
 
-    fetch(base + '/api/receipts')
-      .then(function (r) { if (!r.ok) throw new Error('err'); return r.json(); })
+    fetch(base + '/api/receipts').then(function (r) { if (!r.ok) throw new Error('err'); return r.json(); })
       .then(function (recs) {
         loadEl.classList.add('hidden');
         if (!recs || recs.length === 0) { listEl.innerHTML = '<div class="empty-state"><p class="empty-state-text">Nenhum comprovante registrado.</p></div>'; return; }
         var h = '<div class="diary-feed-list">'; recs.forEach(function (r) { h += buildCard(r, base); }); h += '</div>';
         listEl.innerHTML = h;
+
+        listEl.querySelectorAll('.expandable-img').forEach(function (img) {
+          img.addEventListener('click', function () { showImageModal(img.getAttribute('data-full')); });
+        });
+        listEl.querySelectorAll('.delete-post-btn').forEach(function (btn) {
+          btn.addEventListener('click', function (e) { e.stopPropagation(); deleteReceipt(btn.getAttribute('data-id')); });
+        });
       })
       .catch(function () { loadEl.classList.add('hidden'); listEl.innerHTML = '<div class="empty-state"><p class="empty-state-text">Não foi possível carregar.</p></div>'; });
   };

@@ -77,3 +77,18 @@ def list_receipts():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@receipts_bp.route('/api/receipts/<string:receipt_id>', methods=['DELETE'])
+def delete_receipt(receipt_id):
+    """Exclui um comprovante pelo ID."""
+    try:
+        receipt = db.session.get(Receipt, receipt_id)
+        if not receipt:
+            return jsonify({"error": "Comprovante não encontrado"}), 404
+        db.session.delete(receipt)
+        db.session.commit()
+        return jsonify({"deleted": receipt_id}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500

@@ -1,120 +1,79 @@
-/**
- * team.js — Página de Dados da Equipe
- *
- * Solicita PIN validado contra o servidor via POST /api/verify-pin.
- * Após validação, exibe lista de voluntários.
- *
- * Requisitos: 9.1, 9.2, 9.3
- */
 (function () {
   'use strict';
-
-  var backArrowSvg =
-    '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" ' +
-    'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-    '<circle cx="12" cy="12" r="10"/><polyline points="14 8 10 12 14 16"/></svg>';
+  var backSvg = '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="14 8 10 12 14 16"/></svg>';
 
   function verifyPin(pin) {
     var base = window.Sync ? window.Sync.getServerUrl() : '';
-    return fetch(base + '/api/verify-pin', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pin: pin })
-    })
-    .then(function (res) { return res.json(); })
-    .then(function (data) { return data.valid === true; })
-    .catch(function () { return pin === '1234'; });
-  }
-
-  function buildTeamItem(volunteer) {
-    var initial = (volunteer.full_name || '?').charAt(0).toUpperCase();
-    return '<div class="menu-simple-item" data-id="' + volunteer.id + '" style="cursor:pointer">' +
-      '<span>' + (volunteer.full_name || '') + '</span>' +
-      '<span class="menu-simple-arrow">&gt;</span>' +
-    '</div>';
+    return fetch(base + '/api/verify-pin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin: pin }) })
+      .then(function (r) { return r.json(); }).then(function (d) { return d.valid === true; })
+      .catch(function () { return pin === '1234'; });
   }
 
   function renderPinScreen(container) {
     container.innerHTML =
       '<div class="page-top-bar">' +
-        '<button class="back-circle-btn" id="team-back">' + backArrowSvg + '</button>' +
+        '<button class="back-circle-btn" id="team-back">' + backSvg + '</button>' +
       '</div>' +
       '<div class="pin-screen">' +
         '<h1 class="pin-title">Dados da Equipe</h1>' +
         '<p class="pin-subtitle">Digite o PIN para acessar</p>' +
-        '<input type="password" inputmode="numeric" maxlength="4" pattern="[0-9]*" ' +
-          'class="pin-input" id="pin-input" placeholder="••••" autocomplete="off" ' +
-          'aria-label="PIN de 4 dígitos">' +
+        '<input type="password" inputmode="numeric" maxlength="4" pattern="[0-9]*" class="pin-input" id="pin-input" placeholder="••••" autocomplete="off">' +
         '<p class="pin-error hidden" id="pin-error">PIN incorreto</p>' +
       '</div>';
 
-    document.getElementById('team-back').addEventListener('click', function () {
-      window.location.hash = '#/menu';
-    });
-
-    var pinInput = document.getElementById('pin-input');
-    var pinError = document.getElementById('pin-error');
-
-    pinInput.addEventListener('input', function () {
-      pinError.classList.add('hidden');
-      if (pinInput.value.length === 4) {
-        pinInput.disabled = true;
-        verifyPin(pinInput.value).then(function (valid) {
-          if (valid) {
-            renderTeamList(container);
-          } else {
-            pinError.classList.remove('hidden');
-            pinInput.value = '';
-            pinInput.disabled = false;
-            pinInput.focus();
-          }
+    document.getElementById('team-back').addEventListener('click', function () { window.location.hash = '#/menu'; });
+    var pinIn = document.getElementById('pin-input'), pinErr = document.getElementById('pin-error');
+    pinIn.addEventListener('input', function () {
+      pinErr.classList.add('hidden');
+      if (pinIn.value.length === 4) {
+        pinIn.disabled = true;
+        verifyPin(pinIn.value).then(function (ok) {
+          if (ok) { renderTeamList(container); } else { pinErr.classList.remove('hidden'); pinIn.value = ''; pinIn.disabled = false; pinIn.focus(); }
         });
       }
     });
-    pinInput.focus();
+    pinIn.focus();
   }
 
   function renderTeamList(container) {
     container.innerHTML =
       '<div class="page-top-bar">' +
-        '<button class="back-circle-btn" id="team-back">' + backArrowSvg + '</button>' +
+        '<button class="back-circle-btn" id="team-back">' + backSvg + '</button>' +
         '<img src="assets/logo.png" alt="IPRA no Ariri" class="page-top-logo" onerror="this.style.display=\'none\'">' +
       '</div>' +
-      '<h2 class="form-page-title">Dados da Equipe</h2>' +
-      '<div id="team-list" class="team-name-list"></div>' +
+      '<h2 class="form-page-title">Dados da Equipe:</h2>' +
+      '<div class="detail-cards">' +
+        '<div class="detail-card new-form-card" id="new-vol-card" role="button" tabindex="0">' +
+          '<div class="new-form-card-inner">' +
+            '<span class="detail-card-label" style="margin-bottom:0">Novo<br>voluntário:</span>' +
+            '<button class="add-circle-btn"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>' +
+          '</div></div></div>' +
+      '<div id="team-list" class="mt-16"></div>' +
       '<div id="team-loading" class="text-center mt-24"><div class="spinner"></div></div>';
 
-    document.getElementById('team-back').addEventListener('click', function () {
-      window.location.hash = '#/menu';
-    });
+    document.getElementById('team-back').addEventListener('click', function () { window.location.hash = '#/menu'; });
+    document.getElementById('new-vol-card').addEventListener('click', function () { window.location.hash = '#/menu/team/new'; });
 
     var base = window.Sync ? window.Sync.getServerUrl() : '';
-    var listEl = document.getElementById('team-list');
-    var loadingEl = document.getElementById('team-loading');
+    var listEl = document.getElementById('team-list'), loadEl = document.getElementById('team-loading');
 
-    fetch(base + '/api/volunteers')
-      .then(function (res) { if (!res.ok) throw new Error('err'); return res.json(); })
-      .then(function (volunteers) {
-        loadingEl.classList.add('hidden');
-        if (!volunteers || volunteers.length === 0) {
-          listEl.innerHTML = '<div class="empty-state"><p class="empty-state-text">Nenhum voluntário cadastrado.</p></div>';
-          return;
-        }
-        var html = '';
-        volunteers.forEach(function (v) { html += buildTeamItem(v); });
-        listEl.innerHTML = html;
-
-        var items = listEl.querySelectorAll('.menu-simple-item[data-id]');
-        items.forEach(function (item) {
-          item.addEventListener('click', function () {
-            window.location.hash = '#/menu/team/' + item.getAttribute('data-id');
-          });
+    fetch(base + '/api/volunteers').then(function (r) { if (!r.ok) throw new Error('err'); return r.json(); })
+      .then(function (vols) {
+        loadEl.classList.add('hidden');
+        if (!vols || vols.length === 0) { listEl.innerHTML = '<div class="empty-state"><p class="empty-state-text">Nenhum voluntário cadastrado.</p></div>'; return; }
+        var h = '<div class="menu-simple-list">';
+        vols.forEach(function (v) {
+          h += '<div class="menu-simple-item" data-id="' + v.id + '" role="button" tabindex="0">' +
+            '<span>' + (v.full_name || '') + '</span>' +
+            '<span class="menu-simple-arrow">&gt;</span></div>';
+        });
+        h += '</div>';
+        listEl.innerHTML = h;
+        listEl.querySelectorAll('.menu-simple-item[data-id]').forEach(function (item) {
+          item.addEventListener('click', function () { window.location.hash = '#/menu/team/' + item.getAttribute('data-id'); });
         });
       })
-      .catch(function () {
-        loadingEl.classList.add('hidden');
-        listEl.innerHTML = '<div class="empty-state"><p class="empty-state-text">Não foi possível carregar os voluntários.</p></div>';
-      });
+      .catch(function () { loadEl.classList.add('hidden'); listEl.innerHTML = '<div class="empty-state"><p class="empty-state-text">Não foi possível carregar.</p></div>'; });
   }
 
   window.renderTeamPage = function (container) { renderPinScreen(container); };

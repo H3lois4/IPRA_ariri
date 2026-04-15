@@ -17,9 +17,9 @@
   ];
 
   var PIE_COLORS = [
-    '#1a4731', '#2d6b4a', '#3d8b63', '#4caf7c',
-    '#66c295', '#80d4ae', '#a8e0c4', '#c8ecd8',
-    '#f9a825', '#ff8f00', '#d32f2f', '#7b1fa2'
+    '#1a4731', '#e74c3c', '#3498db', '#f39c12',
+    '#9b59b6', '#1abc9c', '#e67e22', '#2ecc71',
+    '#e91e63', '#00bcd4', '#ff5722', '#607d8b'
   ];
 
   function aggregateActions(forms) {
@@ -36,13 +36,13 @@
 
   function buildBarChart(counts, maxCount) {
     var html = '<div class="bar-chart">';
-    ACTION_TYPES.forEach(function (action) {
+    ACTION_TYPES.forEach(function (action, i) {
       var count = counts[action] || 0;
       var pct = maxCount > 0 ? (count / maxCount) * 100 : 0;
       html +=
         '<div class="bar-row">' +
           '<span class="bar-label">' + action + '</span>' +
-          '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%"></div></div>' +
+          '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%;background:' + PIE_COLORS[i] + '"></div></div>' +
           '<span class="bar-value">' + count + '</span>' +
         '</div>';
     });

@@ -1,26 +1,6 @@
-/**
- * volunteer-profile.js — Perfil completo do voluntário
- *
- * Layout: botão voltar + logo no topo, avatar + nome,
- * dados pessoais em lista simples, termos e dados médicos.
- *
- * Requisitos: 9.4
- */
 (function () {
   'use strict';
-
-  var backArrowSvg =
-    '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" ' +
-    'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-    '<circle cx="12" cy="12" r="10"/><polyline points="14 8 10 12 14 16"/></svg>';
-
-  var docSvg =
-    '<svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
-      '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>' +
-      '<polyline points="14 2 14 8 20 8"/>' +
-      '<polyline points="8 16 12 12 16 16"/>' +
-      '<line x1="12" y1="12" x2="12" y2="20"/>' +
-    '</svg>';
+  var backSvg = '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="14 8 10 12 14 16"/></svg>';
 
   function formatDate(dateStr) {
     if (!dateStr) return '—';
@@ -31,89 +11,79 @@
 
   function esc(str) {
     if (!str) return '—';
-    var div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
+    var div = document.createElement('div'); div.textContent = str; return div.innerHTML;
   }
 
-  function renderVolunteerProfilePage(container, params) {
-    var volunteerId = params && params.id;
+  function buildField(label, value) {
+    return '<div class="vol-field-row"><span class="vol-field-label">' + label + ':</span> <span class="vol-field-value">' + (value || '—') + '</span></div>';
+  }
 
+  window.renderVolunteerProfilePage = function (container, params) {
+    var id = params && params.id;
     container.innerHTML =
       '<div class="page-top-bar">' +
-        '<button class="back-circle-btn" id="profile-back">' + backArrowSvg + '</button>' +
+        '<button class="back-circle-btn" id="prof-back">' + backSvg + '</button>' +
         '<img src="assets/logo.png" alt="IPRA no Ariri" class="page-top-logo" onerror="this.style.display=\'none\'">' +
       '</div>' +
-      '<div id="profile-content"><div class="spinner"></div></div>';
+      '<div id="prof-content"><div class="spinner"></div></div>';
 
-    document.getElementById('profile-back').addEventListener('click', function () {
-      window.location.hash = '#/menu/team';
-    });
+    document.getElementById('prof-back').addEventListener('click', function () { window.location.hash = '#/menu/team'; });
 
-    if (!volunteerId) {
-      document.getElementById('profile-content').innerHTML =
-        '<div class="empty-state"><p class="empty-state-text">Voluntário não encontrado.</p></div>';
-      return;
-    }
+    if (!id) { document.getElementById('prof-content').innerHTML = '<div class="empty-state"><p class="empty-state-text">Voluntário não encontrado.</p></div>'; return; }
 
     var base = window.Sync ? window.Sync.getServerUrl() : '';
-
-    fetch(base + '/api/volunteers/' + encodeURIComponent(volunteerId))
-      .then(function (res) {
-        if (!res.ok) throw new Error('not_found');
-        return res.json();
-      })
+    fetch(base + '/api/volunteers/' + encodeURIComponent(id))
+      .then(function (r) { if (!r.ok) throw new Error('err'); return r.json(); })
       .then(function (v) {
-        var contentEl = document.getElementById('profile-content');
-        if (!contentEl) return;
+        var el = document.getElementById('prof-content');
+        if (!el) return;
 
         var initial = (v.full_name || '?').charAt(0).toUpperCase();
-        var avatarHtml = '<div class="vol-profile-avatar">' + initial + '</div>';
-        if (v.profile_image) {
-          avatarHtml = '<img class="vol-profile-avatar" src="' + base + '/uploads/' + v.profile_image + '" alt="' + esc(v.full_name) + '">';
+
+        // Build terms images
+        var termsHtml = '<div class="vol-doc-box"><span style="color:var(--text-muted);font-size:13px">Nenhum termo</span></div>';
+        if (v.terms_path) {
+          var termFiles = v.terms_path.split(',');
+          termsHtml = '<div style="display:flex;flex-wrap:wrap;gap:8px">';
+          termFiles.forEach(function (f) {
+            var url = base + '/uploads/' + f.trim();
+            termsHtml += '<img src="' + url + '" class="expandable-img" data-full="' + url + '" style="width:80px;height:80px;object-fit:cover;border-radius:8px;cursor:zoom-in" loading="lazy">';
+          });
+          termsHtml += '</div>';
         }
 
-        var html =
+        el.innerHTML =
           '<div class="vol-profile-header">' +
-            avatarHtml +
+            '<div class="vol-profile-avatar">' + initial + '</div>' +
             '<span class="vol-profile-name">' + esc(v.full_name) + '</span>' +
           '</div>' +
-          '<div class="vol-profile-data">' +
-            '<p>' + esc(v.rg) + '</p>' +
-            '<p>' + esc(v.cpf) + '</p>' +
-            '<p>' + formatDate(v.birth_date) + '</p>' +
-            '<p>' + esc(v.gender) + '</p>' +
-            '<p>' + esc(v.profession) + '</p>' +
-            '<p>' + esc(v.email) + '</p>' +
-            '<p>' + esc(v.phone) + '</p>' +
-            '<p>' + esc(v.address) + '</p>' +
+          '<div class="detail-card" style="min-height:auto;padding:16px">' +
+            buildField('RG', esc(v.rg)) +
+            buildField('CPF', esc(v.cpf)) +
+            buildField('Nascimento', formatDate(v.birth_date)) +
+            buildField('Profissão', esc(v.profession)) +
+            buildField('E-mail', esc(v.email)) +
+            buildField('Telefone', esc(v.phone)) +
+            buildField('Endereço', esc(v.address)) +
           '</div>' +
-          '<div class="vol-profile-docs">' +
-            '<p class="form-section-label">Termos assinados:</p>' +
-            '<div class="vol-doc-box">' +
-              (v.terms_path
-                ? '<a href="' + base + '/uploads/' + v.terms_path + '" target="_blank" rel="noopener">' + docSvg + '</a>'
-                : docSvg) +
-            '</div>' +
-          '</div>' +
-          '<div class="vol-profile-docs">' +
-            '<p class="form-section-label">Dados médicos:</p>' +
-            '<div class="vol-doc-box">' +
-              (v.medical_data_path
-                ? '<a href="' + base + '/uploads/' + v.medical_data_path + '" target="_blank" rel="noopener">' + docSvg + '</a>'
-                : docSvg) +
-            '</div>' +
-          '</div>';
+          '<div class="form-section mt-16"><p class="form-section-label">Dados médicos:</p>' +
+            '<div class="detail-card" style="min-height:auto;padding:14px"><p style="font-size:14px;color:var(--text-primary)">' + esc(v.medical_data_path) + '</p></div></div>' +
+          '<div class="form-section mt-16"><p class="form-section-label">Termos assinados:</p>' + termsHtml + '</div>';
 
-        contentEl.innerHTML = html;
+        // Expand images
+        el.querySelectorAll('.expandable-img').forEach(function (img) {
+          img.addEventListener('click', function () {
+            var overlay = document.createElement('div');
+            overlay.className = 'image-modal-overlay';
+            overlay.innerHTML = '<img src="' + img.getAttribute('data-full') + '" class="image-modal-img">';
+            overlay.addEventListener('click', function () { overlay.remove(); });
+            document.body.appendChild(overlay);
+          });
+        });
       })
       .catch(function () {
-        var contentEl = document.getElementById('profile-content');
-        if (contentEl) {
-          contentEl.innerHTML = '<div class="empty-state"><p class="empty-state-text">Não foi possível carregar o perfil.</p></div>';
-        }
+        var el = document.getElementById('prof-content');
+        if (el) el.innerHTML = '<div class="empty-state"><p class="empty-state-text">Não foi possível carregar o perfil.</p></div>';
       });
-  }
-
-  window.renderVolunteerProfilePage = renderVolunteerProfilePage;
+  };
 })();
