@@ -117,16 +117,10 @@
         '<img src="assets/logo.png" alt="IPRA no Ariri" class="page-top-logo" onerror="this.style.display=\'none\'">' +
         '<h1 class="page-top-title">Formulário</h1>' +
       '</div>' +
-      '<div class="detail-cards">' +
-        '<div class="detail-card new-form-card" id="new-form-card" role="button" tabindex="0" aria-label="Novo formulário">' +
-          '<div class="new-form-card-inner">' +
-            '<span class="detail-card-label" style="margin-bottom:0">Novo<br>formulário:</span>' +
-            '<button class="add-circle-btn" id="new-form-btn" aria-label="Adicionar formulário">' +
-              '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">' +
-                '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>' +
-              '</svg>' +
-            '</button>' +
-          '</div>' +
+      '<div class="menu-simple-list">' +
+        '<div class="menu-simple-item" id="new-form-card" role="button" tabindex="0">' +
+          '<span>Novo formulário</span>' +
+          '<span class="menu-simple-arrow">&gt;</span>' +
         '</div>' +
       '</div>' +
       '<div id="forms-dashboard" class="mt-16"></div>' +
