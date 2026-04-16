@@ -1611,3 +1611,12 @@ body {
 .vol-field-value {
   color: var(--text-primary);
 }
+
+/* Icon in menu items (icon-add) */
+.menu-simple-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  margin-left: auto;
+  object-fit: contain;
+}
