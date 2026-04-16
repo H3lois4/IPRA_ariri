@@ -92,3 +92,23 @@ def delete_receipt(receipt_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
+
+
+@receipts_bp.route('/api/receipts/<string:receipt_id>', methods=['PUT'])
+def update_receipt(receipt_id):
+    """Edita um comprovante pelo ID."""
+    try:
+        receipt = db.session.get(Receipt, receipt_id)
+        if not receipt:
+            return jsonify({"error": "Comprovante não encontrado"}), 404
+        title = request.form.get('title')
+        if title:
+            receipt.title = title
+        desc = request.form.get('description')
+        if desc is not None:
+            receipt.description = desc
+        db.session.commit()
+        return jsonify({"id": receipt.id, "title": receipt.title, "description": receipt.description}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500

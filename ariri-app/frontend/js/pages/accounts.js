@@ -2,61 +2,63 @@
   'use strict';
   var backSvg = '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="14 8 10 12 14 16"/></svg>';
 
-  function formatDate(s) {
-    if (!s) return ''; try { var d = new Date(s); if (isNaN(d.getTime())) return s;
-    return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear(); } catch(e) { return s; }
-  }
+  function formatDate(s) { if (!s) return ''; try { var d = new Date(s); if (isNaN(d.getTime())) return s; return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear(); } catch(e) { return s; } }
+  function toast(msg, err) { var e = document.querySelector('.toast'); if (e) e.remove(); var t = document.createElement('div'); t.className = 'toast' + (err ? ' toast-error' : ''); t.textContent = msg; document.body.appendChild(t); setTimeout(function () { if (t.parentNode) t.remove(); }, 3000); }
 
-  function verifyPin(pin) {
+  function checkAdminAuth() {
+    var pin = prompt('Digite o PIN de administrador:');
+    if (!pin) return Promise.resolve(false);
     var base = window.Sync ? window.Sync.getServerUrl() : '';
-    return fetch(base + '/api/verify-pin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin: pin }) })
+    return fetch(base + '/api/verify-admin-pin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin: pin }) })
       .then(function (r) { return r.json(); }).then(function (d) { return d.valid === true; })
-      .catch(function () { return pin === '1234'; });
-  }
-
-  function showImageModal(src) {
-    var overlay = document.createElement('div');
-    overlay.className = 'image-modal-overlay';
-    overlay.innerHTML = '<img src="' + src + '" class="image-modal-img">';
-    overlay.addEventListener('click', function () { overlay.remove(); });
-    document.body.appendChild(overlay);
+      .catch(function () { return pin === '4310'; });
   }
 
   function deleteReceipt(id) {
-    var pin = prompt('Digite o PIN para excluir:');
-    if (!pin) return;
-    verifyPin(pin).then(function (valid) {
-      if (!valid) { alert('PIN incorreto'); return; }
+    checkAdminAuth().then(function (ok) {
+      if (!ok) { alert('Sem permissão'); return; }
       var base = window.Sync ? window.Sync.getServerUrl() : '';
       fetch(base + '/api/receipts/' + id, { method: 'DELETE' })
-        .then(function (r) { if (r.ok) { window.AppRouter.navigate(); } else { alert('Erro ao excluir'); } })
+        .then(function (r) { if (r.ok) { toast('Comprovante excluído', false); window.AppRouter.navigate(); } else { alert('Erro'); } })
         .catch(function () { alert('Erro de conexão'); });
     });
   }
 
+  function editReceipt(id, oldTitle, oldDesc) {
+    checkAdminAuth().then(function (ok) {
+      if (!ok) { alert('Sem permissão'); return; }
+      var newTitle = prompt('Título:', oldTitle); if (newTitle === null) return;
+      var newDesc = prompt('Descrição:', oldDesc); if (newDesc === null) return;
+      var base = window.Sync ? window.Sync.getServerUrl() : '';
+      var fd = new FormData(); fd.append('title', newTitle); fd.append('description', newDesc);
+      fetch(base + '/api/receipts/' + id, { method: 'PUT', body: fd })
+        .then(function (r) { if (r.ok) { toast('Comprovante editado', false); window.AppRouter.navigate(); } else { alert('Erro'); } })
+        .catch(function () { alert('Erro de conexão'); });
+    });
+  }
+
+  function showImageModal(src) {
+    var o = document.createElement('div'); o.className = 'image-modal-overlay';
+    o.innerHTML = '<img src="' + src + '" class="image-modal-img">'; o.addEventListener('click', function () { o.remove(); }); document.body.appendChild(o);
+  }
+
   function buildCard(r, base) {
     var img = r.image_path ? '<img class="diary-post-image expandable-img" src="'+base+'/uploads/'+r.image_path+'" data-full="'+base+'/uploads/'+r.image_path+'" alt="Comprovante" loading="lazy">' : '';
-    return '<article class="diary-post-card" data-id="'+r.id+'">'+
+    return '<article class="diary-post-card">'+
       '<div class="diary-post-header"><span class="diary-post-author" style="color:var(--green)">'+(r.title||'')+'</span><span class="diary-post-date">'+formatDate(r.created_at)+'</span></div>'+
       img+'<div class="diary-post-body"><p class="diary-post-desc">'+(r.description||'')+'</p>'+
-      '<button class="delete-post-btn" data-id="'+r.id+'">Excluir</button></div></article>';
+      '<div class="post-actions">'+
+        '<button class="edit-post-btn" data-id="'+r.id+'" data-title="'+(r.title||'').replace(/"/g,'&quot;')+'" data-desc="'+(r.description||'').replace(/"/g,'&quot;')+'">Editar</button>'+
+        '<button class="delete-post-btn" data-id="'+r.id+'">Excluir</button>'+
+      '</div></div></article>';
   }
 
   window.renderAccountsPage = function (container) {
     container.innerHTML =
-      '<div class="page-top-bar">' +
-        '<button class="back-circle-btn" id="acc-back">' + backSvg + '</button>' +
-        '<img src="assets/logo.png" alt="IPRA no Ariri" class="page-top-logo" onerror="this.style.display=\'none\'">' +
-      '</div>' +
+      '<div class="page-top-bar"><button class="back-circle-btn" id="acc-back">' + backSvg + '</button><img src="assets/logo.png" alt="IPRA no Ariri" class="page-top-logo" onerror="this.style.display=\'none\'"></div>' +
       '<h2 class="form-page-title">Prestação de contas:</h2>' +
-      '<div class="menu-simple-list">' +
-        '<div class="menu-simple-item" id="new-rec-card" role="button" tabindex="0">' +
-          '<span>Adicionar comprovante</span>' +
-          '<img src="assets/icon-add.png" class="menu-simple-icon" alt="+">' +
-        '</div>' +
-      '</div>' +
-      '<div id="rec-list" class="mt-16"></div>' +
-      '<div id="rec-load" class="text-center mt-24"><div class="spinner"></div></div>';
+      '<div class="menu-simple-list"><div class="menu-simple-item" id="new-rec-card" role="button" tabindex="0"><span>Adicionar comprovante</span><img src="assets/icon-add.png" class="menu-simple-icon" alt="+"></div></div>' +
+      '<div id="rec-list" class="mt-16"></div><div id="rec-load" class="text-center mt-24"><div class="spinner"></div></div>';
 
     document.getElementById('acc-back').addEventListener('click', function () { window.location.hash = '#/menu'; });
     document.getElementById('new-rec-card').addEventListener('click', function () { window.location.hash = '#/menu/accounts/new'; });
@@ -70,13 +72,9 @@
         if (!recs || recs.length === 0) { listEl.innerHTML = '<div class="empty-state"><p class="empty-state-text">Nenhum comprovante registrado.</p></div>'; return; }
         var h = '<div class="diary-feed-list">'; recs.forEach(function (r) { h += buildCard(r, base); }); h += '</div>';
         listEl.innerHTML = h;
-
-        listEl.querySelectorAll('.expandable-img').forEach(function (img) {
-          img.addEventListener('click', function () { showImageModal(img.getAttribute('data-full')); });
-        });
-        listEl.querySelectorAll('.delete-post-btn').forEach(function (btn) {
-          btn.addEventListener('click', function (e) { e.stopPropagation(); deleteReceipt(btn.getAttribute('data-id')); });
-        });
+        listEl.querySelectorAll('.expandable-img').forEach(function (img) { img.addEventListener('click', function () { showImageModal(img.getAttribute('data-full')); }); });
+        listEl.querySelectorAll('.delete-post-btn').forEach(function (btn) { btn.addEventListener('click', function (e) { e.stopPropagation(); deleteReceipt(btn.getAttribute('data-id')); }); });
+        listEl.querySelectorAll('.edit-post-btn').forEach(function (btn) { btn.addEventListener('click', function (e) { e.stopPropagation(); editReceipt(btn.getAttribute('data-id'), btn.getAttribute('data-title'), btn.getAttribute('data-desc')); }); });
       })
       .catch(function () { loadEl.classList.add('hidden'); listEl.innerHTML = '<div class="empty-state"><p class="empty-state-text">Não foi possível carregar.</p></div>'; });
   };

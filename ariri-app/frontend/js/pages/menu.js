@@ -18,11 +18,15 @@
       '<div class="menu-simple-list">' +
         '<div class="menu-simple-item" data-href="#/menu/accounts" role="button" tabindex="0">' +
           '<span>Prestação de contas</span>' +
-          '<span class="menu-simple-arrow">&gt;</span>' +
+          '<img src="assets/recibo.png" class="menu-simple-icon" alt="">' +
         '</div>' +
         '<div class="menu-simple-item" data-href="#/menu/team" role="button" tabindex="0">' +
           '<span>Dados da equipe</span>' +
-          '<span class="menu-simple-arrow">&gt;</span>' +
+          '<img src="assets/equipe.png" class="menu-simple-icon" alt="">' +
+        '</div>' +
+        '<div class="menu-simple-item" data-href="#/menu/settings" role="button" tabindex="0">' +
+          '<span>Configurações</span>' +
+          '<img src="assets/config.png" class="menu-simple-icon" alt="">' +
         '</div>' +
       '</div>';
 

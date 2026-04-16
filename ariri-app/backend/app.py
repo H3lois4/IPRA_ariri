@@ -23,6 +23,7 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['UPLOADS_DIR'] = UPLOADS_DIR
     app.config['ACCESS_PIN'] = os.environ.get('ARIRI_PIN', '1234')
+    app.config['ADMIN_PIN'] = os.environ.get('ARIRI_ADMIN_PIN', '4310')
 
     db.init_app(app)
     CORS(app)
@@ -43,7 +44,7 @@ def create_app():
     def reset_all():
         data = flask_request.get_json(silent=True) or {}
         pin = str(data.get('pin', ''))
-        if pin != app.config.get('ACCESS_PIN', '1234'):
+        if pin != app.config.get('ADMIN_PIN', '4310'):
             return jsonify({"error": "PIN incorreto"}), 403
         try:
             from backend.models import Form, Post, Receipt, Volunteer
@@ -56,6 +57,24 @@ def create_app():
                 shutil.rmtree(UPLOADS_DIR)
                 os.makedirs(UPLOADS_DIR, exist_ok=True)
             return jsonify({"status": "ok", "message": "Todos os dados foram apagados"}), 200
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": str(e)}), 500
+
+    @app.route('/api/clear/<string:table>', methods=['POST'])
+    def clear_table(table):
+        data = flask_request.get_json(silent=True) or {}
+        pin = str(data.get('pin', ''))
+        if pin != app.config.get('ADMIN_PIN', '4310'):
+            return jsonify({"error": "PIN incorreto"}), 403
+        try:
+            from backend.models import Form, Post, Receipt
+            tables = {'forms': Form, 'posts': Post, 'receipts': Receipt}
+            if table not in tables:
+                return jsonify({"error": "Tabela inválida"}), 400
+            tables[table].query.delete()
+            db.session.commit()
+            return jsonify({"status": "ok", "message": table + " apagados"}), 200
         except Exception as e:
             db.session.rollback()
             return jsonify({"error": str(e)}), 500

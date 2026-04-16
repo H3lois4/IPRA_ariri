@@ -99,3 +99,23 @@ def delete_post(post_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
+
+
+@posts_bp.route('/api/posts/<string:post_id>', methods=['PUT'])
+def update_post(post_id):
+    """Edita uma postagem pelo ID."""
+    try:
+        post = db.session.get(Post, post_id)
+        if not post:
+            return jsonify({"error": "Postagem não encontrada"}), 404
+        title = request.form.get('title')
+        if title:
+            post.title = title
+        desc = request.form.get('description')
+        if desc is not None:
+            post.description = desc
+        db.session.commit()
+        return jsonify({"id": post.id, "title": post.title, "description": post.description}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
