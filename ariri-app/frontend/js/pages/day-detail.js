@@ -21,6 +21,7 @@
   var MEAL_LABELS = {
     breakfast: 'Café da manhã',
     lunch: 'Almoço',
+    snack: 'Lanche da tarde',
     dinner: 'Jantar'
   };
 
@@ -98,7 +99,7 @@
         '<div class="detail-card-content">';
 
     if (menu) {
-      var meals = ['breakfast', 'lunch', 'dinner'];
+      var meals = ['breakfast', 'lunch', 'snack', 'dinner'];
       for (var j = 0; j < meals.length; j++) {
         if (menu[meals[j]]) {
           html +=

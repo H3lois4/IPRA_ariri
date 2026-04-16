@@ -337,7 +337,7 @@ body {
 }
 
 .page-top-logo {
-  width: 56px;
+  width: 36px;
   height: auto;
   flex-shrink: 0;
 }
@@ -391,11 +391,12 @@ body {
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  gap: 12px;
 }
 
 .add-circle-btn {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: var(--green);
   color: var(--white);
@@ -405,6 +406,7 @@ body {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  margin-left: auto;
   transition: transform 0.15s ease;
 }
 
@@ -556,6 +558,7 @@ body {
   font-size: 15px;
   font-weight: 700;
   color: var(--green);
+  margin-top: 16px;
   margin-bottom: 14px;
 }
 

@@ -1,10 +1,10 @@
 (function () {
   'use strict';
   var DAYS = [
-    { id: 'sabado', label: 'Sábado' },
-    { id: 'domingo', label: 'Domingo' },
-    { id: 'segunda', label: 'Segunda' },
-    { id: 'terca', label: 'Terça' }
+    { id: 'sabado', label: 'Sábado - 18/04' },
+    { id: 'domingo', label: 'Domingo - 19/04' },
+    { id: 'segunda', label: 'Segunda - 20/04' },
+    { id: 'terca', label: 'Terça - 21/04' }
   ];
 
   window.renderInfoPage = function (container) {
