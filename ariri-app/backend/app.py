@@ -83,6 +83,10 @@ def create_app():
     def serve_js(filename):
         return send_from_directory(os.path.join(FRONTEND_DIR, 'js'), filename)
 
+    @app.route('/data/<path:filename>')
+    def serve_data(filename):
+        return send_from_directory(os.path.join(FRONTEND_DIR, 'data'), filename)
+
     @app.route('/assets/<path:filename>')
     def serve_assets(filename):
         return send_from_directory(os.path.join(FRONTEND_DIR, 'assets'), filename)

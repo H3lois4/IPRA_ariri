@@ -7,7 +7,6 @@ var STATIC_FILES = [
   '/js/config.js',
   '/js/sync.js',
   '/js/resize.js',
-  '/js/offline-cache.js',
   '/js/app.js',
   '/js/pages/splash.js',
   '/js/pages/info.js',
