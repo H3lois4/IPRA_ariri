@@ -1,5 +1,6 @@
 import os
-from flask import Flask, send_from_directory, request as flask_request
+import shutil
+from flask import Flask, send_from_directory, request as flask_request, jsonify
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
@@ -36,6 +37,28 @@ def create_app():
         except ImportError:
             pass
         db.create_all()
+
+    # Reset all data (protected by PIN)
+    @app.route('/api/reset-all', methods=['POST'])
+    def reset_all():
+        data = flask_request.get_json(silent=True) or {}
+        pin = str(data.get('pin', ''))
+        if pin != app.config.get('ACCESS_PIN', '1234'):
+            return jsonify({"error": "PIN incorreto"}), 403
+        try:
+            from backend.models import Form, Post, Receipt, Volunteer
+            Form.query.delete()
+            Post.query.delete()
+            Receipt.query.delete()
+            Volunteer.query.delete()
+            db.session.commit()
+            if os.path.isdir(UPLOADS_DIR):
+                shutil.rmtree(UPLOADS_DIR)
+                os.makedirs(UPLOADS_DIR, exist_ok=True)
+            return jsonify({"status": "ok", "message": "Todos os dados foram apagados"}), 200
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"error": str(e)}), 500
 
     # Serve uploaded files
     @app.route('/uploads/<path:filename>')
