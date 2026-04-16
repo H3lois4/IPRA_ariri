@@ -120,7 +120,7 @@
       '<div class="menu-simple-list">' +
         '<div class="menu-simple-item" id="new-form-card" role="button" tabindex="0">' +
           '<span>Novo formulário</span>' +
-          '<span class="menu-simple-arrow">&gt;</span>' +
+          '<img src="assets/icon-add.png" class="menu-simple-icon" alt="+">' +
         '</div>' +
       '</div>' +
       '<div id="forms-dashboard" class="mt-16"></div>' +

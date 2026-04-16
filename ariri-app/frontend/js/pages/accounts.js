@@ -52,7 +52,7 @@
       '<div class="menu-simple-list">' +
         '<div class="menu-simple-item" id="new-rec-card" role="button" tabindex="0">' +
           '<span>Adicionar comprovante</span>' +
-          '<span class="menu-simple-arrow">&gt;</span>' +
+          '<img src="assets/icon-add.png" class="menu-simple-icon" alt="+">' +
         '</div>' +
       '</div>' +
       '<div id="rec-list" class="mt-16"></div>' +
