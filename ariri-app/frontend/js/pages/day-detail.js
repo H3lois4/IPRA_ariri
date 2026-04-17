@@ -161,7 +161,6 @@
         '<div class="detail-cards">' +
           buildScheduleCard(day.schedule) +
           buildMenuCard(day.menu) +
-          buildMaterialsCard(day.materials) +
         '</div>';
 
       container.innerHTML = html;
