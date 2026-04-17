@@ -1,0 +1,15 @@
+# Dados sensíveis dos voluntários
+ariri-app/frontend/data/team.json
+ariri-app/seed_team.py
+
+# Python
+__pycache__/
+*.pyc
+*.db
+
+# Certs
+ariri-app/backend/certs/
+
+# OS
+.DS_Store
+Thumbs.db

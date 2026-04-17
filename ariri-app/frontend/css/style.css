@@ -1620,3 +1620,78 @@ body {
   margin-left: auto;
   object-fit: contain;
 }
+
+/* Volunteer data list (simple) */
+.vol-data-list p {
+  font-size: 14px;
+  color: var(--text-primary);
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  line-height: 1.5;
+}
+
+.vol-data-list p strong {
+  color: var(--green);
+}
+
+/* Settings page */
+.settings-section {
+  margin-top: 16px;
+}
+
+.settings-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settings-btn {
+  padding: 14px 20px;
+  background: var(--cream-dark);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--green);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.settings-btn:active {
+  background: rgba(26, 71, 49, 0.08);
+}
+
+.settings-btn-danger {
+  color: var(--danger);
+  border: 1.5px solid var(--danger);
+  background: transparent;
+}
+
+.settings-btn-danger:active {
+  background: rgba(211, 47, 47, 0.08);
+}
+
+/* Post action buttons (edit + delete) */
+.post-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.edit-post-btn {
+  display: inline-block;
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--green);
+  background: none;
+  border: 1.5px solid var(--green);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.edit-post-btn:active {
+  background: rgba(26, 71, 49, 0.1);
+}

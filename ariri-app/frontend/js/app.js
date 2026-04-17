@@ -34,8 +34,8 @@
     { pattern: '#/menu/accounts',        render: renderAccounts },
     { pattern: '#/menu/accounts/new',    render: renderNewReceipt },
     { pattern: '#/menu/team',            render: renderTeam },
-    { pattern: '#/menu/team/new',        render: renderNewVolunteer },
-    { pattern: '#/menu/team/:id',        render: renderVolunteerProfile }
+    { pattern: '#/menu/team/:id',        render: renderVolunteerProfile },
+    { pattern: '#/menu/settings',        render: renderSettings }
   ];
 
   // ─── Utilitários de roteamento ───
@@ -339,14 +339,6 @@
       '<p class="text-muted">Dados da equipe — em construção.</p>';
   }
 
-  function renderNewVolunteer(container, params) {
-    if (typeof window.renderNewVolunteerPage === 'function') {
-      window.renderNewVolunteerPage(container, params);
-      return;
-    }
-    container.innerHTML = '<p class="text-muted">Novo voluntário — em construção.</p>';
-  }
-
   function renderVolunteerProfile(container, params) {
     if (typeof window.renderVolunteerProfilePage === 'function') {
       window.renderVolunteerProfilePage(container, params);
@@ -359,6 +351,14 @@
       '</button>' +
       '<div class="page-header"><h1 class="page-title">Perfil do Voluntário</h1></div>' +
       '<p class="text-muted">Perfil #' + (params.id || '') + ' — em construção.</p>';
+  }
+
+  function renderSettings(container, params) {
+    if (typeof window.renderSettingsPage === 'function') {
+      window.renderSettingsPage(container, params);
+      return;
+    }
+    container.innerHTML = '<p class="text-muted">Configurações — em construção.</p>';
   }
 
   // ─── Expor funções de roteamento para uso externo ───

@@ -11,9 +11,7 @@
 
   function renderPinScreen(container) {
     container.innerHTML =
-      '<div class="page-top-bar">' +
-        '<button class="back-circle-btn" id="team-back">' + backSvg + '</button>' +
-      '</div>' +
+      '<div class="page-top-bar"><button class="back-circle-btn" id="team-back">' + backSvg + '</button></div>' +
       '<div class="pin-screen">' +
         '<h1 class="pin-title">Dados da Equipe</h1>' +
         '<p class="pin-subtitle">Digite o PIN para acessar</p>' +
@@ -42,30 +40,19 @@
         '<img src="assets/logo.png" alt="IPRA no Ariri" class="page-top-logo" onerror="this.style.display=\'none\'">' +
       '</div>' +
       '<h2 class="form-page-title">Dados da Equipe:</h2>' +
-      '<div class="menu-simple-list">' +
-        '<div class="menu-simple-item" id="new-vol-card" role="button" tabindex="0">' +
-          '<span>Novo voluntário</span>' +
-          '<span class="menu-simple-arrow">&gt;</span>' +
-        '</div>' +
-      '</div>' +
-      '<div id="team-list" class="mt-16"></div>' +
-      '<div id="team-loading" class="text-center mt-24"><div class="spinner"></div></div>';
+      '<div id="team-list"><div class="spinner"></div></div>';
 
     document.getElementById('team-back').addEventListener('click', function () { window.location.hash = '#/menu'; });
-    document.getElementById('new-vol-card').addEventListener('click', function () { window.location.hash = '#/menu/team/new'; });
 
     var base = window.Sync ? window.Sync.getServerUrl() : '';
-    var listEl = document.getElementById('team-list'), loadEl = document.getElementById('team-loading');
-
     fetch(base + '/api/volunteers').then(function (r) { if (!r.ok) throw new Error('err'); return r.json(); })
       .then(function (vols) {
-        loadEl.classList.add('hidden');
+        var listEl = document.getElementById('team-list');
         if (!vols || vols.length === 0) { listEl.innerHTML = '<div class="empty-state"><p class="empty-state-text">Nenhum voluntário cadastrado.</p></div>'; return; }
         var h = '<div class="menu-simple-list">';
         vols.forEach(function (v) {
           h += '<div class="menu-simple-item" data-id="' + v.id + '" role="button" tabindex="0">' +
-            '<span>' + (v.full_name || '') + '</span>' +
-            '<span class="menu-simple-arrow">&gt;</span></div>';
+            '<span>' + v.full_name + '</span><span class="menu-simple-arrow">&gt;</span></div>';
         });
         h += '</div>';
         listEl.innerHTML = h;
@@ -73,7 +60,7 @@
           item.addEventListener('click', function () { window.location.hash = '#/menu/team/' + item.getAttribute('data-id'); });
         });
       })
-      .catch(function () { loadEl.classList.add('hidden'); listEl.innerHTML = '<div class="empty-state"><p class="empty-state-text">Não foi possível carregar.</p></div>'; });
+      .catch(function () { document.getElementById('team-list').innerHTML = '<div class="empty-state"><p class="empty-state-text">Não foi possível carregar.</p></div>'; });
   }
 
   window.renderTeamPage = function (container) { renderPinScreen(container); };
