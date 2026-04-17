@@ -1580,8 +1580,8 @@ body {
 /* Delete icon button (top-right corner of card) */
 .card-delete-btn {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  bottom: 10px;
+  right: 10px;
   z-index: 2;
   display: flex;
   align-items: center;
