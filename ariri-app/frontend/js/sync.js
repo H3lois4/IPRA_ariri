@@ -135,10 +135,13 @@ const Sync = (() => {
       .then(function (result) {
         // 5. Mark synced items in IndexedDB
         var syncedIds = result.synced || [];
+        var errorIds = (result.errors || []).map(function (e) { return e.id; });
+        // Mark both synced and errored items to avoid retrying forever
+        var doneIds = syncedIds.concat(errorIds);
         var promises = [];
 
         all.forEach(function (item) {
-          if (syncedIds.indexOf(item.id) !== -1) {
+          if (doneIds.indexOf(item.id) !== -1) {
             promises.push(
               window.DB.markSynced(item._store, item.id)
             );
@@ -185,8 +188,15 @@ const Sync = (() => {
 
         // There are pending items — show 'pending' and sync
         _updateIndicator('pending');
-        return syncAll().then(function () {
-          _updateIndicator('online');
+        return syncAll().then(function (result) {
+          // After sync, re-check if there are still truly pending items
+          return Promise.all(
+            STORES.map(function (store) { return window.DB.getPending(store); })
+          ).then(function (arr2) {
+            var stillPending = 0;
+            arr2.forEach(function (a) { stillPending += a.length; });
+            _updateIndicator(stillPending === 0 ? 'online' : 'pending');
+          });
         }).catch(function () {
           // Sync failed but server was reachable — still pending
           _updateIndicator('pending');
