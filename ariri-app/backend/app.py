@@ -11,6 +11,30 @@ FRONTEND_DIR = os.path.abspath(os.path.join(BASE_DIR, '..', 'frontend'))
 UPLOADS_DIR = os.path.join(BASE_DIR, 'uploads')
 
 
+def _run_migrations(app):
+    """Add missing columns to existing tables (SQLAlchemy create_all won't do this)."""
+    migrations = [
+        ("form", "image_data", "TEXT"),
+        ("form", "image_path", "VARCHAR(500)"),
+        ("form", "people_served", "INTEGER DEFAULT 1"),
+        ("form", "age", "INTEGER"),
+        ("form", "locality", "VARCHAR(200)"),
+        ("post", "image_data", "TEXT"),
+        ("post", "image_path", "VARCHAR(500)"),
+        ("receipt", "image_data", "TEXT"),
+        ("receipt", "image_path", "VARCHAR(500)"),
+    ]
+    with app.app_context():
+        for table, column, col_type in migrations:
+            try:
+                db.session.execute(db.text(
+                    f"ALTER TABLE \"{table}\" ADD COLUMN \"{column}\" {col_type}"
+                ))
+                db.session.commit()
+            except Exception:
+                db.session.rollback()
+
+
 def create_app():
     app = Flask(__name__, static_folder=None)
 
@@ -38,6 +62,7 @@ def create_app():
         except ImportError:
             pass
         db.create_all()
+        _run_migrations(app)
 
     # Reset all data (protected by PIN)
     @app.route('/api/reset-all', methods=['POST'])
