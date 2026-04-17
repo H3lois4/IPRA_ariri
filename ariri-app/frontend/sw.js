@@ -1,4 +1,4 @@
-var CACHE_NAME = 'ipra-ariri-v4';
+var CACHE_NAME = 'ipra-ariri-v5';
 var STATIC_FILES = [
   '/',
   '/index.html',

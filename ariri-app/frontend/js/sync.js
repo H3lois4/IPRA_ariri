@@ -25,11 +25,18 @@ const Sync = (() => {
 
   /**
    * Return the configured base URL for the server.
-   * Defaults to '' (empty string = same origin).
+   * If the app is served from the same origin as the API (e.g. Flask on Render),
+   * returns '' so requests go to the same origin (most reliable).
    * @returns {string}
    */
   function getServerUrl() {
-    return localStorage.getItem(LS_KEY) || window.API_BASE_URL || '';
+    var stored = localStorage.getItem(LS_KEY);
+    if (stored) return stored;
+    // If API_BASE_URL matches current origin, use '' (same-origin is more reliable)
+    if (window.API_BASE_URL && window.location.origin === new URL(window.API_BASE_URL).origin) {
+      return '';
+    }
+    return window.API_BASE_URL || '';
   }
 
   /**
@@ -64,13 +71,28 @@ const Sync = (() => {
 
   /**
    * Check connectivity by hitting GET /api/ping.
+   * Uses AbortController to timeout after 10 seconds.
    * @returns {Promise<boolean>} true if server is reachable
    */
   function ping() {
+    // Quick check — browser says we're offline
+    if (typeof navigator.onLine !== 'undefined' && !navigator.onLine) {
+      return Promise.resolve(false);
+    }
+
     var base = getServerUrl();
     var url = base + '/api/ping';
 
-    return fetch(url, { method: 'GET' })
+    // Timeout after 10s (Render free tier can be slow to wake)
+    var controller;
+    var signal;
+    if (typeof AbortController !== 'undefined') {
+      controller = new AbortController();
+      signal = controller.signal;
+      setTimeout(function () { controller.abort(); }, 10000);
+    }
+
+    return fetch(url, { method: 'GET', signal: signal })
       .then(function (res) { return res.ok; })
       .catch(function () { return false; });
   }
