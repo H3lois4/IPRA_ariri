@@ -13,7 +13,7 @@
   var ACTION_TYPES = [
     'Evangelismo', 'Visitação', 'Oração', 'Aconselhamento',
     'Infantil', 'Manutenção', 'Auxílio ao MEAP', 'Cozinha',
-    'Educação', 'Odontologia', 'P. Socorros', 'Outros'
+    'Educação', 'Saúde', 'P. Socorros', 'Outros'
   ];
 
   var PIE_COLORS = [

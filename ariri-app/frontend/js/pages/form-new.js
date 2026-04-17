@@ -2,7 +2,7 @@
   'use strict';
   var ACTION_TYPES = [
     'Evangelismo', 'Infantil', 'Educação',
-    'Visitação', 'Manutenção', 'Odontologia',
+    'Visitação', 'Manutenção', 'Saúde',
     'Oração', 'Auxílio ao MEAP', 'P. Socorros',
     'Aconselhamento', 'Cozinha', 'Outros'
   ];

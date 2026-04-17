@@ -33,40 +33,24 @@
     });
   }
 
-  function editPost(postId, authorName, oldTitle, oldDesc) {
-    checkAuth(authorName).then(function (ok) {
-      if (!ok) { alert('Sem permissão'); return; }
-      var newTitle = prompt('Título:', oldTitle);
-      if (newTitle === null) return;
-      var newDesc = prompt('Descrição:', oldDesc);
-      if (newDesc === null) return;
-      var base = window.Sync ? window.Sync.getServerUrl() : '';
-      var fd = new FormData(); fd.append('title', newTitle); fd.append('description', newDesc);
-      fetch(base + '/api/posts/' + postId, { method: 'PUT', body: fd })
-        .then(function (r) { if (r.ok) { toast('Postagem editada', false); window.AppRouter.navigate(); } else { alert('Erro ao editar'); } })
-        .catch(function () { alert('Erro de conexão'); });
-    });
-  }
-
   function showImageModal(src) {
     var o = document.createElement('div'); o.className = 'image-modal-overlay';
     o.innerHTML = '<img src="' + src + '" class="image-modal-img">'; o.addEventListener('click', function () { o.remove(); }); document.body.appendChild(o);
   }
 
+  var deleteSvg = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+
   function buildPostCard(post, baseUrl) {
     var author = post.volunteer_name || 'Anônimo';
     var img = '';
-    if (post.image_path) { var u = baseUrl + '/uploads/' + post.image_path; img = '<img class="diary-post-image expandable-img" src="' + u + '" data-full="' + u + '" alt="Imagem" loading="lazy">'; }
+    if (post.image_data) { img = '<img class="diary-post-image expandable-img" src="' + post.image_data + '" data-full="' + post.image_data + '" alt="Imagem" loading="lazy">'; }
     return '<article class="diary-post-card">' +
+      '<button class="card-delete-btn delete-post-btn" data-id="' + post.id + '" data-author="' + author + '" aria-label="Excluir">' + deleteSvg + '</button>' +
       '<div class="diary-post-header"><span class="diary-post-author">' + author + '</span><span class="diary-post-date">' + formatDate(post.created_at) + '</span></div>' +
       img +
       '<div class="diary-post-body">' +
         '<h3 class="diary-post-title">' + (post.title || '') + '</h3>' +
         '<p class="diary-post-desc">' + (post.description || '') + '</p>' +
-        '<div class="post-actions">' +
-          '<button class="edit-post-btn" data-id="' + post.id + '" data-author="' + author + '" data-title="' + (post.title || '').replace(/"/g, '&quot;') + '" data-desc="' + (post.description || '').replace(/"/g, '&quot;') + '">Editar</button>' +
-          '<button class="delete-post-btn" data-id="' + post.id + '" data-author="' + author + '">Excluir</button>' +
-        '</div>' +
       '</div></article>';
   }
 
@@ -90,7 +74,6 @@
         feedEl.innerHTML = h;
         feedEl.querySelectorAll('.expandable-img').forEach(function (img) { img.addEventListener('click', function () { showImageModal(img.getAttribute('data-full')); }); });
         feedEl.querySelectorAll('.delete-post-btn').forEach(function (btn) { btn.addEventListener('click', function (e) { e.stopPropagation(); deletePost(btn.getAttribute('data-id'), btn.getAttribute('data-author')); }); });
-        feedEl.querySelectorAll('.edit-post-btn').forEach(function (btn) { btn.addEventListener('click', function (e) { e.stopPropagation(); editPost(btn.getAttribute('data-id'), btn.getAttribute('data-author'), btn.getAttribute('data-title'), btn.getAttribute('data-desc')); }); });
       })
       .catch(function () { loadEl.classList.add('hidden'); feedEl.innerHTML = '<div class="empty-state"><p class="empty-state-text">Não foi possível carregar.</p></div>'; });
   };

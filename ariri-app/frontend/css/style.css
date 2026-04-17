@@ -867,6 +867,7 @@ body {
 }
 
 .diary-post-card {
+  position: relative;
   background: var(--white);
   border-radius: var(--radius);
   overflow: hidden;
@@ -1576,26 +1577,37 @@ body {
   cursor: zoom-in;
 }
 
-/* Delete button */
-.delete-post-btn {
-  display: inline-block;
-  margin-top: 10px;
-  padding: 6px 16px;
-  font-size: 12px;
-  font-weight: 600;
+/* Delete icon button (top-right corner of card) */
+.card-delete-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.85);
+  border: none;
+  border-radius: 50%;
   color: var(--danger);
-  background: none;
-  border: 1.5px solid var(--danger);
-  border-radius: 20px;
   cursor: pointer;
   transition: background 0.2s ease;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 }
 
-.delete-post-btn:active {
-  background: rgba(211, 47, 47, 0.1);
+.card-delete-btn:active {
+  background: rgba(211, 47, 47, 0.15);
 }
 
-/* Volunteer profile field rows */
+/* Post action buttons (edit + delete) */
+.post-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
 .vol-field-row {
   padding: 8px 0;
   border-bottom: 1px solid rgba(0,0,0,0.04);
@@ -1672,26 +1684,4 @@ body {
   background: rgba(211, 47, 47, 0.08);
 }
 
-/* Post action buttons (edit + delete) */
-.post-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.edit-post-btn {
-  display: inline-block;
-  padding: 6px 16px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--green);
-  background: none;
-  border: 1.5px solid var(--green);
-  border-radius: 20px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.edit-post-btn:active {
-  background: rgba(26, 71, 49, 0.1);
-}
+/* Volunteer profile field rows */

@@ -24,33 +24,21 @@
     });
   }
 
-  function editReceipt(id, oldTitle, oldDesc) {
-    checkAdminAuth().then(function (ok) {
-      if (!ok) { alert('Sem permissão'); return; }
-      var newTitle = prompt('Título:', oldTitle); if (newTitle === null) return;
-      var newDesc = prompt('Descrição:', oldDesc); if (newDesc === null) return;
-      var base = window.Sync ? window.Sync.getServerUrl() : '';
-      var fd = new FormData(); fd.append('title', newTitle); fd.append('description', newDesc);
-      fetch(base + '/api/receipts/' + id, { method: 'PUT', body: fd })
-        .then(function (r) { if (r.ok) { toast('Comprovante editado', false); window.AppRouter.navigate(); } else { alert('Erro'); } })
-        .catch(function () { alert('Erro de conexão'); });
-    });
-  }
-
   function showImageModal(src) {
     var o = document.createElement('div'); o.className = 'image-modal-overlay';
     o.innerHTML = '<img src="' + src + '" class="image-modal-img">'; o.addEventListener('click', function () { o.remove(); }); document.body.appendChild(o);
   }
 
+  var deleteSvg = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+
   function buildCard(r, base) {
-    var img = r.image_path ? '<img class="diary-post-image expandable-img" src="'+base+'/uploads/'+r.image_path+'" data-full="'+base+'/uploads/'+r.image_path+'" alt="Comprovante" loading="lazy">' : '';
+    var imgSrc = r.image_data || (r.image_path ? base+'/uploads/'+r.image_path : '');
+    var img = imgSrc ? '<img class="diary-post-image expandable-img" src="'+imgSrc+'" data-full="'+imgSrc+'" alt="Comprovante" loading="lazy">' : '';
     return '<article class="diary-post-card">'+
+      '<button class="card-delete-btn delete-post-btn" data-id="'+r.id+'" aria-label="Excluir">'+deleteSvg+'</button>'+
       '<div class="diary-post-header"><span class="diary-post-author" style="color:var(--green)">'+(r.title||'')+'</span><span class="diary-post-date">'+formatDate(r.created_at)+'</span></div>'+
       img+'<div class="diary-post-body"><p class="diary-post-desc">'+(r.description||'')+'</p>'+
-      '<div class="post-actions">'+
-        '<button class="edit-post-btn" data-id="'+r.id+'" data-title="'+(r.title||'').replace(/"/g,'&quot;')+'" data-desc="'+(r.description||'').replace(/"/g,'&quot;')+'">Editar</button>'+
-        '<button class="delete-post-btn" data-id="'+r.id+'">Excluir</button>'+
-      '</div></div></article>';
+      '</div></article>';
   }
 
   window.renderAccountsPage = function (container) {
@@ -74,7 +62,6 @@
         listEl.innerHTML = h;
         listEl.querySelectorAll('.expandable-img').forEach(function (img) { img.addEventListener('click', function () { showImageModal(img.getAttribute('data-full')); }); });
         listEl.querySelectorAll('.delete-post-btn').forEach(function (btn) { btn.addEventListener('click', function (e) { e.stopPropagation(); deleteReceipt(btn.getAttribute('data-id')); }); });
-        listEl.querySelectorAll('.edit-post-btn').forEach(function (btn) { btn.addEventListener('click', function (e) { e.stopPropagation(); editReceipt(btn.getAttribute('data-id'), btn.getAttribute('data-title'), btn.getAttribute('data-desc')); }); });
       })
       .catch(function () { loadEl.classList.add('hidden'); listEl.innerHTML = '<div class="empty-state"><p class="empty-state-text">Não foi possível carregar.</p></div>'; });
   };

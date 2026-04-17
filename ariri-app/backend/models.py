@@ -16,6 +16,7 @@ class Form(db.Model):
     locality = db.Column(db.String(200))
     description = db.Column(db.Text)
     image_path = db.Column(db.String(500))
+    image_data = db.Column(db.Text)  # Base64 da imagem (persistente)
     people_served = db.Column(db.Integer, default=1)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -23,21 +24,23 @@ class Form(db.Model):
 class Post(db.Model):
     """Postagem do Diário de Bordo."""
 
-    id = db.Column(db.String(36), primary_key=True)  # UUID
+    id = db.Column(db.String(36), primary_key=True)
     volunteer_name = db.Column(db.String(100), nullable=False)
     title = db.Column(db.String(300), nullable=False)
     description = db.Column(db.Text)
     image_path = db.Column(db.String(500))
+    image_data = db.Column(db.Text)  # Base64 da imagem (persistente)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
 class Receipt(db.Model):
     """Comprovante de prestação de contas."""
 
-    id = db.Column(db.String(36), primary_key=True)  # UUID
+    id = db.Column(db.String(36), primary_key=True)
     title = db.Column(db.String(300), nullable=False)
     description = db.Column(db.Text)
     image_path = db.Column(db.String(500))
+    image_data = db.Column(db.Text)  # Base64 da imagem (persistente)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 
@@ -46,7 +49,6 @@ class Volunteer(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     full_name = db.Column(db.String(200), nullable=False)
-    profile_image = db.Column(db.String(500))
     rg = db.Column(db.String(20))
     cpf = db.Column(db.String(14))
     birth_date = db.Column(db.Date)
@@ -55,5 +57,4 @@ class Volunteer(db.Model):
     email = db.Column(db.String(200))
     phone = db.Column(db.String(20))
     address = db.Column(db.Text)
-    terms_path = db.Column(db.String(500))
     medical_data_path = db.Column(db.String(500))

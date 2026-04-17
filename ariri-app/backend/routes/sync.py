@@ -1,12 +1,9 @@
 """Rota da API para sincronização em lote (/api/sync)."""
 
-import base64
 import json
-import os
-import uuid
 from datetime import datetime
 
-from flask import Blueprint, current_app, jsonify, request
+from flask import Blueprint, jsonify, request
 
 from backend.app import db
 from backend.models import Form, Post, Receipt
@@ -14,27 +11,17 @@ from backend.models import Form, Post, Receipt
 sync_bp = Blueprint('sync', __name__)
 
 
-def _save_base64_image(base64_data):
-    """Decodifica imagem base64 e salva em uploads/. Retorna o filename."""
+def _ensure_base64_data_uri(base64_data):
+    """Garante que o dado base64 tenha o prefixo data URI. Retorna None se vazio."""
     if not base64_data:
         return None
 
-    # Strip data URI prefix if present (e.g. "data:image/jpeg;base64,...")
-    if ',' in base64_data:
-        base64_data = base64_data.split(',', 1)[1]
+    # Já tem prefixo data URI — retorna como está
+    if base64_data.startswith('data:'):
+        return base64_data
 
-    try:
-        image_bytes = base64.b64decode(base64_data)
-    except Exception:
-        return None
-
-    filename = f"{uuid.uuid4().hex}.jpg"
-    uploads_dir = current_app.config['UPLOADS_DIR']
-    os.makedirs(uploads_dir, exist_ok=True)
-    with open(os.path.join(uploads_dir, filename), 'wb') as f:
-        f.write(image_bytes)
-
-    return filename
+    # Sem prefixo — adiciona como JPEG por padrão
+    return 'data:image/jpeg;base64,' + base64_data
 
 
 def _parse_created_at(value):
@@ -59,7 +46,7 @@ def _sync_form(item_id, data, created_at):
         except (json.JSONDecodeError, TypeError):
             actions = [actions]
 
-    image_path = _save_base64_image(data.get('image'))
+    image_data = _ensure_base64_data_uri(data.get('image'))
 
     age = data.get('age')
     age_int = None
@@ -77,7 +64,7 @@ def _sync_form(item_id, data, created_at):
         age=age_int,
         locality=data.get('locality'),
         description=data.get('description'),
-        image_path=image_path,
+        image_data=image_data,
         people_served=int(data.get('people_served', 1) or 1),
         created_at=created_at,
     )
@@ -86,14 +73,14 @@ def _sync_form(item_id, data, created_at):
 
 def _sync_post(item_id, data, created_at):
     """Cria um registro Post a partir dos dados de sincronização."""
-    image_path = _save_base64_image(data.get('image'))
+    image_data = _ensure_base64_data_uri(data.get('image'))
 
     post = Post(
         id=item_id,
         volunteer_name=data.get('volunteer_name', ''),
         title=data.get('title', ''),
         description=data.get('description'),
-        image_path=image_path,
+        image_data=image_data,
         created_at=created_at,
     )
     db.session.add(post)
@@ -101,13 +88,13 @@ def _sync_post(item_id, data, created_at):
 
 def _sync_receipt(item_id, data, created_at):
     """Cria um registro Receipt a partir dos dados de sincronização."""
-    image_path = _save_base64_image(data.get('image'))
+    image_data = _ensure_base64_data_uri(data.get('image'))
 
     receipt = Receipt(
         id=item_id,
         title=data.get('title', ''),
         description=data.get('description'),
-        image_path=image_path,
+        image_data=image_data,
         created_at=created_at,
     )
     db.session.add(receipt)

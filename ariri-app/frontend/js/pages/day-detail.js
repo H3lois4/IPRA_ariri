@@ -115,24 +115,6 @@
     return html;
   }
 
-  function buildMaterialsCard(materials) {
-    var html =
-      '<div class="detail-card">' +
-        '<p class="detail-card-label">Materiais:</p>' +
-        '<div class="detail-card-content">';
-
-    if (materials && materials.length > 0) {
-      html += '<div class="materials-list">';
-      for (var i = 0; i < materials.length; i++) {
-        html += '<span class="material-tag">' + materials[i] + '</span>';
-      }
-      html += '</div>';
-    }
-
-    html += '</div></div>';
-    return html;
-  }
-
   window.renderDayDetailPage = function (container, params) {
     var dayId = params && params.day ? params.day : '';
 
