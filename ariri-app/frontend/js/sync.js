@@ -32,10 +32,6 @@ const Sync = (() => {
   function getServerUrl() {
     var stored = localStorage.getItem(LS_KEY);
     if (stored) return stored;
-    // If API_BASE_URL matches current origin, use '' (same-origin is more reliable)
-    if (window.API_BASE_URL && window.location.origin === new URL(window.API_BASE_URL).origin) {
-      return '';
-    }
     return window.API_BASE_URL || '';
   }
 
@@ -197,9 +193,11 @@ const Sync = (() => {
       }
 
       // Server is reachable — check for pending items
-      return Promise.all(
-        STORES.map(function (store) { return window.DB.getPending(store); })
-      ).then(function (arrays) {
+      var pendingChecks = STORES.map(function (store) {
+        return window.DB.getPending(store).catch(function () { return []; });
+      });
+
+      return Promise.all(pendingChecks).then(function (arrays) {
         var totalPending = 0;
         arrays.forEach(function (arr) { totalPending += arr.length; });
 
@@ -208,21 +206,16 @@ const Sync = (() => {
           return;
         }
 
-        // There are pending items — show 'pending' and sync
+        // There are pending items — sync them
         _updateIndicator('pending');
-        return syncAll().then(function (result) {
-          // After sync, re-check if there are still truly pending items
-          return Promise.all(
-            STORES.map(function (store) { return window.DB.getPending(store); })
-          ).then(function (arr2) {
-            var stillPending = 0;
-            arr2.forEach(function (a) { stillPending += a.length; });
-            _updateIndicator(stillPending === 0 ? 'online' : 'pending');
-          });
+        return syncAll().then(function () {
+          _updateIndicator('online');
         }).catch(function () {
-          // Sync failed but server was reachable — still pending
-          _updateIndicator('pending');
+          _updateIndicator('online');
         });
+      }).catch(function () {
+        // DB error but server is reachable
+        _updateIndicator('online');
       });
     }).catch(function () {
       _updateIndicator('offline');
