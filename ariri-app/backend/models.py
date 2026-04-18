@@ -1,8 +1,15 @@
 """Modelos SQLAlchemy para o IPRA no Ariri."""
 
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 from .app import db
+
+# Fuso horário de Brasília (UTC-3)
+BRT = timezone(timedelta(hours=-3))
+
+
+def _now_brt():
+    return datetime.now(BRT).replace(tzinfo=None)
 
 
 class Form(db.Model):
@@ -18,7 +25,7 @@ class Form(db.Model):
     image_path = db.Column(db.String(500))
     image_data = db.Column(db.Text)  # Base64 da imagem (persistente)
     people_served = db.Column(db.Integer, default=1)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=_now_brt)
 
 
 class Post(db.Model):
@@ -30,7 +37,7 @@ class Post(db.Model):
     description = db.Column(db.Text)
     image_path = db.Column(db.String(500))
     image_data = db.Column(db.Text)  # Base64 da imagem (persistente)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=_now_brt)
 
 
 class Receipt(db.Model):
@@ -41,7 +48,7 @@ class Receipt(db.Model):
     description = db.Column(db.Text)
     image_path = db.Column(db.String(500))
     image_data = db.Column(db.Text)  # Base64 da imagem (persistente)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=_now_brt)
 
 
 class Volunteer(db.Model):

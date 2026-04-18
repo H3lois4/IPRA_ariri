@@ -25,16 +25,23 @@ def _ensure_base64_data_uri(base64_data):
 
 
 def _parse_created_at(value):
-    """Parse ISO 8601 created_at string into a datetime object."""
+    """Parse ISO 8601 created_at string into a datetime object (horário de Brasília)."""
     if not value:
-        return datetime.utcnow()
+        from backend.models import _now_brt
+        return _now_brt()
     try:
         # Handle trailing Z (UTC indicator)
         if isinstance(value, str) and value.endswith('Z'):
             value = value[:-1] + '+00:00'
-        return datetime.fromisoformat(value).replace(tzinfo=None)
+        dt = datetime.fromisoformat(value)
+        # Se veio com timezone, converte para BRT; senão assume que já é local
+        if dt.tzinfo is not None:
+            from backend.models import BRT
+            dt = dt.astimezone(BRT)
+        return dt.replace(tzinfo=None)
     except (ValueError, TypeError):
-        return datetime.utcnow()
+        from backend.models import _now_brt
+        return _now_brt()
 
 
 def _sync_form(item_id, data, created_at):
