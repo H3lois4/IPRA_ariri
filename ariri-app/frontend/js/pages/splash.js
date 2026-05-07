@@ -27,6 +27,7 @@
             '<cite>Marcos 16: 15</cite>' +
           '</p>' +
         '</div>' +
+        '<p class="splash-tap-hint">Toque na tela para continuar</p>' +
       '</div>';
 
     var splashArea = document.getElementById('splash-area');

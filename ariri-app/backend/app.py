@@ -38,11 +38,8 @@ def _run_migrations(app):
 def create_app():
     app = Flask(__name__, static_folder=None)
 
-    # Database: use DATABASE_URL env var (Render/PostgreSQL) or SQLite locally
-    database_url = os.environ.get('DATABASE_URL', 'sqlite:///' + os.path.join(BASE_DIR, 'ariri.db'))
-    # Render uses postgres:// but SQLAlchemy needs postgresql://
-    if database_url.startswith('postgres://'):
-        database_url = database_url.replace('postgres://', 'postgresql://', 1)
+    # Database: SQLite local (sem conexão com banco de produção)
+    database_url = 'sqlite:///' + os.path.join(BASE_DIR, 'ariri.db')
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['UPLOADS_DIR'] = UPLOADS_DIR
